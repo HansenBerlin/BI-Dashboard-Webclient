@@ -1,10 +1,15 @@
 ﻿@page "/"
 @using System.Linq
 @using Plotly.Blazor.LayoutLib
+@using Plotly.Blazor.LayoutLib.ColorAxisLib
+@using Plotly.Blazor.LayoutLib.ColorAxisLib.ColorBarLib
+@using Plotly.Blazor.LayoutLib.MapBoxLib
+@using Plotly.Blazor.Traces.ScatterMapBoxLib
 @using Center = Plotly.Blazor.LayoutLib.MapBoxLib.Center
 @using JsonSerializer = System.Text.Json.JsonSerializer
 @using Marker = Plotly.Blazor.Traces.ScatterMapBoxLib.Marker
 @using ModeFlag = Plotly.Blazor.Traces.ScatterMapBoxLib.ModeFlag
+@using Title = Plotly.Blazor.LayoutLib.ColorAxisLib.ColorBarLib.Title
 @inject IWebHostEnvironment Environment
 
 
@@ -35,35 +40,33 @@
             string jsonString = await File.ReadAllTextAsync(path);
             var jsonObject = JsonSerializer.Deserialize<object>(jsonString);
 
+            _plotlyChart.Config = new Config { MapboxAccessToken = Token };
             //_plotlyChart.Data = new List<ITrace>();
-            _plotlyChart.Data.Add(new 
-                ChoroplethMapBox
-                {
-                    GeoJson = jsonObject,
-                    Z = zSeries,
-                    Locations = locSeries,
-                    FeatureIdKey = "properties.AGS"
-                });
+            
+            var choromap =  new ChoroplethMapBox
+            {
+                GeoJson = jsonObject,
+                Z = zSeries,
+                Locations = locSeries,
+                FeatureIdKey = "properties.AGS",
+                ColorAxis = "coloraxis"
+            };
 
-            var scatterMap = new ScatterMapBox()
+            var scatterMap = new ScatterMapBox
             {
                 Lat = scatterOverlayData.Select(x => (object)x.Lat).ToList(),
                 Lon = scatterOverlayData.Select(x => (object)x.Lon).ToList(),
                 Mode = ModeFlag.Markers, Marker = new Marker
                 {
-                    ColorArray = scatterOverlayData.Select(x => (object)x.BaseRent).ToList()
-                },
-                //Fill = FillEnum.None
+                    ColorArray = scatterOverlayData.Select(x => (object)x.BaseRent).ToList(),
+                    SizeArray = scatterOverlayData.Select(x => (decimal)x.LivingSpace).ToList() as IList<decimal?>, 
+                    ColorAxis = "coloraxis2"
+                    
+                }
             };
             
-            _plotlyChart.Data.Add(scatterMap);
-
             _plotlyChart.Layout = new Layout
             {
-                /*Geo = new List<Geo>
-                {
-                    new() { Scope = ScopeEnum.Europe }
-                },*/
                 MapBox = new List<MapBox>
                 {
                     new ()
@@ -72,13 +75,42 @@
                         Center = new Center { Lon = 10.4515m, Lat = 51.1657m },
                         Zoom = 5.5m
                     }
+                },
+                ColorAxis = new List<ColorAxis>
+                {
+                    new()
+                    {
+                        ColorScale = "Blues", 
+                        ShowScale = true, 
+                        ColorBar = new ColorBar
+                        {
+                            YAnchor = 0, Y = 1, X = -0.05m, Title = new Title
+                            {
+                                Text = "hello"
+                            }, 
+                            TickLabelPosition = TickLabelPositionEnum.OutsideLeft
+                        }
+                    },
+                    new()
+                    {
+                        ColorScale = "Cividis",
+                        ShowScale = true, 
+                        ColorBar = new ColorBar
+                        {
+                            Title = new Title
+                            {
+                                Text = "hello"
+                            }, 
+                            TickLabelPosition = TickLabelPositionEnum.OutsideRight
+                        }
+                    }
+                    
                 }
             };
 
-            _plotlyChart.Config = new Config { MapboxAccessToken = Token };
             await _plotlyChart.Relayout();
-            await _plotlyChart.AddTrace(_plotlyChart.Data[0]);
-            await _plotlyChart.AddTrace(_plotlyChart.Data[1]);
+            await _plotlyChart.AddTrace(choromap);
+            await _plotlyChart.AddTrace(scatterMap);
             StateHasChanged();
         }
     }
