@@ -114,3 +114,5 @@ public class ImmoRentDataModel
     public double PricePerSqMService { get; set; }
     public double PricePerSqMTotal { get; set; }
 }
+
+

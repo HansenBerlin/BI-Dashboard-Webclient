@@ -1,9 +1,30 @@
 ﻿@inherits LayoutComponentBase
 
-<PageTitle>BI_Dashboard_Webclient</PageTitle>
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
-<main>
-    <article>
+<MudLayout>
+    <MudAppBar>
+        <MudIconButton 
+            Icon="@Icons.Material.Filled.Menu" 
+            Color="Color.Inherit" 
+            Edge="Edge.Start" 
+            OnClick="@((e) => DrawerToggle())" />
+        Miethai Dashboard
+    </MudAppBar>
+    <MudDrawer @bind-Open="@_drawerOpen">
+        <NavMenu/>
+    </MudDrawer>
+    <MudMainContent>
         @Body
-    </article>
-</main>
+    </MudMainContent>
+</MudLayout>
+@code {
+    bool _drawerOpen = true;
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+}

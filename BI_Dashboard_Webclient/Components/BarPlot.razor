@@ -1,0 +1,80 @@
+﻿@using Plotly.Blazor.LayoutLib
+<PlotlyChart Id="TestId" @ref="_chart" Style="height: 90vh;" />
+
+@code
+{
+    [Inject]
+    public DataStatefulRepository Repository { get; set; }
+    
+    PlotlyChart _chart;
+
+    readonly Config _config = new()
+    {
+        Responsive = true
+    };
+
+    readonly Layout _layout = new()
+    {
+        Title = new Title
+        {
+            Text = "Bar"
+        },
+        BarMode = BarModeEnum.Stack,
+        Height = 500
+    };
+
+    List<ITrace> _data = new();
+    List<object> _years = new();
+    List<List<object>> _heating = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var rentData = await Repository.GetRentData();
+            var years = rentData
+                .Select(x => x.YearConstructed)
+                .Where(x => x > 1880)
+                .Distinct()
+                .ToList();
+            _years = years.Cast<object>().ToList();
+            var heatingTypes = rentData.Select(x => x.HeatingType).Distinct().ToList();
+            List<List<double>> relativeVals = heatingTypes.Select(_ => new List<double>()).ToList();
+            
+            for (var y = 0; y < years.Count; y++)
+            {
+                int year = years[y];
+                int countTotal = rentData.Count(x => x.YearConstructed == year);
+                for (var i = 0; i < heatingTypes.Count; i++)
+                {
+                    string ht = heatingTypes[i];
+                    int count = rentData.Count(x => x.HeatingType == ht && x.YearConstructed == year);
+                    double relative = (double) count / countTotal;
+                    relativeVals[i].Add(relative);
+                }
+            }
+            
+
+
+            _heating = relativeVals.Select(l => l.Cast<object>().ToList()).ToList();
+            _chart.Layout = _layout;
+            _chart.Config = _config;
+            //_data = new List<ITrace>();
+            for (int i = 0; i < _heating.Count; i++)
+            {
+                var trace = new Bar
+                {
+                    X = _years,
+                    Y = _heating[i],
+                    Name = heatingTypes[i]
+                };
+                await _chart.AddTrace(trace);
+            }
+
+            //await _chart.Update();
+            //await _chart.AddTrace(_data[1]);
+            await _chart.Relayout();
+            StateHasChanged();
+        }
+    }
+}

@@ -1,4 +1,5 @@
 using BI_Dashboard_Webclient;
+using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,9 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<CsvParser<RdbDataModel>>();
 builder.Services.AddSingleton<CsvParser<ImmoRentDataModel>>();
 builder.Services.AddSingleton<CsvParser<ImmoBuyDataModel>>();
+builder.Services.AddSingleton<DataStatefulRepository>();
+builder.Services.AddMudServices();
+
 
 var app = builder.Build();
 

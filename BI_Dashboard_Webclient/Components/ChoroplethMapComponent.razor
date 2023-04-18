@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿
 @using System.Linq
 @using Plotly.Blazor.LayoutLib
 @using Plotly.Blazor.LayoutLib.ColorAxisLib
@@ -10,18 +10,14 @@
 @using Marker = Plotly.Blazor.Traces.ScatterMapBoxLib.Marker
 @using ModeFlag = Plotly.Blazor.Traces.ScatterMapBoxLib.ModeFlag
 @using Title = Plotly.Blazor.LayoutLib.ColorAxisLib.ColorBarLib.Title
-@inject IWebHostEnvironment Environment
 
-
-
-<PlotlyChart @ref="_plotlyChart" Style="height: 90vh;" />
+<PlotlyChart @ref="_plotlyChart" Style="height: 100vh; width: 100%" />
 
 @code {
     
     [Inject]
-    public CsvParser<RdbDataModel> ParserRdb { get; set; }
-    [Inject]
-    public CsvParser<ImmoRentDataModel> ParserRent { get; set; }
+    public DataStatefulRepository Repository { get; set; }
+    
     private const string Token = "pk.eyJ1IjoiaGFuc2VuYXVzYmVybGluIiwiYSI6ImNsZzRjNm51eDBvM3gzbHFlbzd1YzFucnQifQ.jZmB_ZdTHVkSlVddks7XfQ";
     private PlotlyChart _plotlyChart;
 
@@ -30,22 +26,18 @@
     {
         if (firstRender)
         {
-            var choroplethOverlayData = await ParserRdb.ParseAsync();
-            var scatterOverlayData = await ParserRent.ParseAsync();
-            scatterOverlayData = scatterOverlayData.GetRange(0, 1000);
+            var choroplethOverlayData = await Repository.GetRdbData();
+            var scatterOverlayData = await Repository.GetRentData();
+            var geoJsonData = await Repository.GetGeoJson();
+            //scatterOverlayData = scatterOverlayData.GetRange(0, 1000);
             var zSeries = choroplethOverlayData.Select(x => (object)x.ConsumerInsolvencies).ToList();
             var locSeries = choroplethOverlayData.Select(x => (object)x.AgsKey).ToList();
             
-            var path = Path.Combine(Environment.WebRootPath, "geofiles", "landkreisegermany.geojson");
-            string jsonString = await File.ReadAllTextAsync(path);
-            var jsonObject = JsonSerializer.Deserialize<object>(jsonString);
-
             _plotlyChart.Config = new Config { MapboxAccessToken = Token };
-            //_plotlyChart.Data = new List<ITrace>();
             
             var choromap =  new ChoroplethMapBox
             {
-                GeoJson = jsonObject,
+                GeoJson = geoJsonData,
                 Z = zSeries,
                 Locations = locSeries,
                 FeatureIdKey = "properties.AGS",
@@ -104,11 +96,18 @@
                             TickLabelPosition = TickLabelPositionEnum.OutsideRight
                         }
                     }
-                    
-                }
+                }, ShowLegend = false, ModeBar = new ModeBar(){}
             };
 
-            await _plotlyChart.Relayout();
+            try
+            {
+                await _plotlyChart.Relayout();
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
             await _plotlyChart.AddTrace(choromap);
             await _plotlyChart.AddTrace(scatterMap);
             StateHasChanged();

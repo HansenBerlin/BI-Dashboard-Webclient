@@ -1,0 +1,71 @@
+﻿@page "/"
+
+<MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False" Style="padding-top: 20px; margin-top: 20px;">
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">Apartments: @_totalApartments</MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">Durchscnittmiete: @_averageBaseRent</MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="4">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">Durchschnit Hausalter: @_averageHouseAge</MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">Durchschnitt QM Preis @_averagePricePerSqm</MudPaper>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">Häufigster Heizungstyp: @_mostCommonHeatingType</MudPaper>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 100%">Höhe Monatliche Mieteinnahmen: @_totalBaseRentIncomePerMonth</MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="4">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code
+{
+    [Inject]
+    public DataStatefulRepository Repository { get; set; }
+
+    private double _averageBaseRent;
+    private double _totalBaseRentIncomePerMonth;
+    private int _totalApartments;
+    private double _averagePricePerSqm;
+    private int _averageHouseAge;
+    private string _mostCommonHeatingType = "";
+    private List<ImmoRentDataModel> _data;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var data = await Repository.GetRentData();
+            _data = new List<ImmoRentDataModel>(data);
+            _averageBaseRent = data.Average(x => x.BaseRent);
+            _averagePricePerSqm = data.Average(x => x.PricePerSqMBase);
+            _averageHouseAge = DateTime.Now.Year - (int)data.Average(x => x.YearConstructed);
+            _totalBaseRentIncomePerMonth = data.Sum(x => x.BaseRent);
+            _totalApartments = data.Count;
+            _mostCommonHeatingType = data
+                .Select(x => x.HeatingType)
+                .GroupBy(s => s)
+                .OrderByDescending(g => g.Count())
+                .First().Key;
+            StateHasChanged();
+        }
+    }
+}
