@@ -1,9 +1,5 @@
 ﻿@page "/"
-@using Plotly.Blazor
 @using System.Linq
-@using System.Net.Http.Json
-@using Microsoft.AspNetCore.Http.Features
-@using Newtonsoft.Json
 @using Plotly.Blazor.LayoutLib
 @using Plotly.Blazor.LayoutLib.GeoLib
 @using JsonSerializer = System.Text.Json.JsonSerializer
@@ -11,18 +7,13 @@
 
 
 
-<PlotlyChart @ref="plotlyChart" Data="_data" Style="height: 800px; width: 100%;" >
-    
-</PlotlyChart>
-
+<PlotlyChart @ref="plotlyChart" Style="height: 90vh;" />
 
 @code {
-    private ChoroplethMapBox _choropleth;
     PlotlyChart plotlyChart;
-    List<ITrace> _data;
-    Layout _layout;
-    Config _config;
     
+    [Inject]
+    public CsvParser<RdbDataModel> Parser { get; set; }
 
     string token = "pk.eyJ1IjoiaGFuc2VuYXVzYmVybGluIiwiYSI6ImNsZzRjNm51eDBvM3gzbHFlbzd1YzFucnQifQ.jZmB_ZdTHVkSlVddks7XfQ";
 
@@ -30,56 +21,46 @@
     {
         if (firstRender)
         {
-            var path = Path.Combine(Environment.WebRootPath, "geofiles", "gemeindengermany.geojson");
+            var data = await Parser.ParseAsync();
+            var zSeries = data.Select(x => (object)x.ConsumerInsolvencies).ToList();
+            var locSeries = data.Select(x => (object)x.AgsKey).ToList();
+            
+            var path = Path.Combine(Environment.WebRootPath, "geofiles", "landkreisegermany.geojson");
             string jsonString = await File.ReadAllTextAsync(path);
             var jsonObject = JsonSerializer.Deserialize<object>(jsonString);
-            var zSeries = new List<object> {0.1f, 0.2f, 0.4f};
-            var locSeries = new List<object> {"01001000", "01002000", "01003000"};
-
-            _choropleth = new ChoroplethMapBox()
-            {
-                GeoJson = jsonObject,
-                Z = zSeries,
-                Locations = locSeries,
-                FeatureIdKey = "properties.ags"
-            };
             
-            _data = new List<ITrace>
+            plotlyChart.Data = new List<ITrace>
             {
-                _choropleth
-            };
-            
-        
-            _layout = new Layout()
-            {
-                Geo = new List<Geo>()
+                new ChoroplethMapBox()
                 {
-                    new()
-                    {
-                        Scope = ScopeEnum.Europe
-                    }
+                    GeoJson = jsonObject,
+                    Z = zSeries,
+                    Locations = locSeries,
+                    FeatureIdKey = "properties.AGS"
+                }
+            };
+
+            plotlyChart.Layout = new Layout
+            {
+                Geo = new List<Geo>
+                {
+                    new() { Scope = ScopeEnum.Europe }
                 },
                 MapBox = new List<MapBox>()
                 {
                     new ()
                     {
-                        Style = "carto-darkmatter", 
-                        AccessToken = token
+                        Style = "carto-positron", 
+                        Center = new () { Lon = 10.4515m, Lat = 51.1657m },
+                        Zoom = 5.5m
                     }
                 }
             };
 
-            _config = new Config()
-            {
-                MapboxAccessToken = token
-            };
-
-            plotlyChart.Config = _config;
-            plotlyChart.Layout = _layout;
+            plotlyChart.Config = new Config { MapboxAccessToken = token };
             await plotlyChart.Relayout();
-            await plotlyChart.AddTrace(_choropleth);
+            await plotlyChart.AddTrace(plotlyChart.Data[0]);
             StateHasChanged();
-
         }
     }
 
