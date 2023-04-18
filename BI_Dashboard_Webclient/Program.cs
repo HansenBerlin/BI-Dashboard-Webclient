@@ -6,6 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<CsvParser<RdbDataModel>>();
+builder.Services.AddSingleton<CsvParser<ImmoRentDataModel>>();
+builder.Services.AddSingleton<CsvParser<ImmoBuyDataModel>>();
 
 var app = builder.Build();
 

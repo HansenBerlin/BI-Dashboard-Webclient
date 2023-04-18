@@ -52,7 +52,7 @@ public class CsvParser<T>
     private T Map(IReadOnlyList<string> values, IReadOnlyList<string> columnNames)
     {
         var model = new T();
-        var props = typeof(RdbDataModel).GetProperties().Where(prop => prop.CanWrite);
+        var props = _type.GetProperties().Where(prop => prop.CanWrite);
 
         for (int i = 0; i < values.Count; i++)
         {
@@ -95,8 +95,8 @@ public class ImmoRentDataModel
     public double LivingSpace { get; set; }
     public int NoRooms { get; set; }
     public int NoParkSpaces { get; set; }
-    public bool Balcony { get; set; }
-    public bool HasKitchen { get; set; }
+    public int Balcony { get; set; }
+    public int HasKitchen { get; set; }
     public int Cellar { get; set; }
     public string Condition { get; set; }
     public string InteriorQual { get; set; }

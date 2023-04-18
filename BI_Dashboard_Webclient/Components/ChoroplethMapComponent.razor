@@ -1,65 +1,84 @@
 ﻿@page "/"
 @using System.Linq
 @using Plotly.Blazor.LayoutLib
-@using Plotly.Blazor.LayoutLib.GeoLib
+@using Center = Plotly.Blazor.LayoutLib.MapBoxLib.Center
 @using JsonSerializer = System.Text.Json.JsonSerializer
+@using Marker = Plotly.Blazor.Traces.ScatterMapBoxLib.Marker
+@using ModeFlag = Plotly.Blazor.Traces.ScatterMapBoxLib.ModeFlag
 @inject IWebHostEnvironment Environment
 
 
 
-<PlotlyChart @ref="plotlyChart" Style="height: 90vh;" />
+<PlotlyChart @ref="_plotlyChart" Style="height: 90vh;" />
 
 @code {
-    PlotlyChart plotlyChart;
     
     [Inject]
-    public CsvParser<RdbDataModel> Parser { get; set; }
+    public CsvParser<RdbDataModel> ParserRdb { get; set; }
+    [Inject]
+    public CsvParser<ImmoRentDataModel> ParserRent { get; set; }
+    private const string Token = "pk.eyJ1IjoiaGFuc2VuYXVzYmVybGluIiwiYSI6ImNsZzRjNm51eDBvM3gzbHFlbzd1YzFucnQifQ.jZmB_ZdTHVkSlVddks7XfQ";
+    private PlotlyChart _plotlyChart;
 
-    string token = "pk.eyJ1IjoiaGFuc2VuYXVzYmVybGluIiwiYSI6ImNsZzRjNm51eDBvM3gzbHFlbzd1YzFucnQifQ.jZmB_ZdTHVkSlVddks7XfQ";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            var data = await Parser.ParseAsync();
-            var zSeries = data.Select(x => (object)x.ConsumerInsolvencies).ToList();
-            var locSeries = data.Select(x => (object)x.AgsKey).ToList();
+            var choroplethOverlayData = await ParserRdb.ParseAsync();
+            var scatterOverlayData = await ParserRent.ParseAsync();
+            scatterOverlayData = scatterOverlayData.GetRange(0, 1000);
+            var zSeries = choroplethOverlayData.Select(x => (object)x.ConsumerInsolvencies).ToList();
+            var locSeries = choroplethOverlayData.Select(x => (object)x.AgsKey).ToList();
             
             var path = Path.Combine(Environment.WebRootPath, "geofiles", "landkreisegermany.geojson");
             string jsonString = await File.ReadAllTextAsync(path);
             var jsonObject = JsonSerializer.Deserialize<object>(jsonString);
-            
-            plotlyChart.Data = new List<ITrace>
-            {
-                new ChoroplethMapBox()
+
+            //_plotlyChart.Data = new List<ITrace>();
+            _plotlyChart.Data.Add(new 
+                ChoroplethMapBox
                 {
                     GeoJson = jsonObject,
                     Z = zSeries,
                     Locations = locSeries,
                     FeatureIdKey = "properties.AGS"
-                }
-            };
+                });
 
-            plotlyChart.Layout = new Layout
+            var scatterMap = new ScatterMapBox()
             {
-                Geo = new List<Geo>
+                Lat = scatterOverlayData.Select(x => (object)x.Lat).ToList(),
+                Lon = scatterOverlayData.Select(x => (object)x.Lon).ToList(),
+                Mode = ModeFlag.Markers, Marker = new Marker
+                {
+                    ColorArray = scatterOverlayData.Select(x => (object)x.BaseRent).ToList()
+                },
+                //Fill = FillEnum.None
+            };
+            
+            _plotlyChart.Data.Add(scatterMap);
+
+            _plotlyChart.Layout = new Layout
+            {
+                /*Geo = new List<Geo>
                 {
                     new() { Scope = ScopeEnum.Europe }
-                },
-                MapBox = new List<MapBox>()
+                },*/
+                MapBox = new List<MapBox>
                 {
                     new ()
                     {
                         Style = "carto-positron", 
-                        Center = new () { Lon = 10.4515m, Lat = 51.1657m },
+                        Center = new Center { Lon = 10.4515m, Lat = 51.1657m },
                         Zoom = 5.5m
                     }
                 }
             };
 
-            plotlyChart.Config = new Config { MapboxAccessToken = token };
-            await plotlyChart.Relayout();
-            await plotlyChart.AddTrace(plotlyChart.Data[0]);
+            _plotlyChart.Config = new Config { MapboxAccessToken = Token };
+            await _plotlyChart.Relayout();
+            await _plotlyChart.AddTrace(_plotlyChart.Data[0]);
+            await _plotlyChart.AddTrace(_plotlyChart.Data[1]);
             StateHasChanged();
         }
     }
