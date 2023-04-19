@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BI_Dashboard_Webclient", "BI_Dashboard_Webclient\BI_Dashboard_Webclient.csproj", "{4BA9B53C-FF07-4C4B-B1F9-7106EF57A6F1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalApi", "MinimalApi\MinimalApi.csproj", "{AE2D14FD-1AC1-467A-88E3-847002BEFCD2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{4BA9B53C-FF07-4C4B-B1F9-7106EF57A6F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4BA9B53C-FF07-4C4B-B1F9-7106EF57A6F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4BA9B53C-FF07-4C4B-B1F9-7106EF57A6F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE2D14FD-1AC1-467A-88E3-847002BEFCD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE2D14FD-1AC1-467A-88E3-847002BEFCD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE2D14FD-1AC1-467A-88E3-847002BEFCD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE2D14FD-1AC1-467A-88E3-847002BEFCD2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

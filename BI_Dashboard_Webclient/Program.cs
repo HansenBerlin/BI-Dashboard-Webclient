@@ -6,10 +6,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<CsvParser<RdbDataModel>>();
-builder.Services.AddSingleton<CsvParser<ImmoRentDataModel>>();
-builder.Services.AddSingleton<CsvParser<ImmoBuyDataModel>>();
-builder.Services.AddSingleton<DataStatefulRepository>();
+builder.Services.AddScoped<CsvParser<RdbDataModel>>();
+builder.Services.AddScoped<CsvParser<ImmoRentDataModel>>();
+builder.Services.AddScoped<CsvParser<ImmoBuyDataModel>>();
+builder.Services.AddScoped<DataStatefulRepository>();
 builder.Services.AddMudServices();
 
 
