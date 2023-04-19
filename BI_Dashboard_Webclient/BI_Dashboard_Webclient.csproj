@@ -14,4 +14,8 @@
       <PackageReference Include="Plotly.Blazor" Version="2.18.2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\BI_Core\BI_Core.csproj" />
+    </ItemGroup>
+
 </Project>

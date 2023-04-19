@@ -1,5 +1,7 @@
 ﻿@page "/maps"
 @using System.Linq
+@using BI_Core
+@using Plotly.Blazor.ConfigLib
 @using Plotly.Blazor.LayoutLib
 @using Plotly.Blazor.LayoutLib.ColorAxisLib
 @using Plotly.Blazor.LayoutLib.ColorAxisLib.ColorBarLib
@@ -7,76 +9,173 @@
 @using Marker = Plotly.Blazor.Traces.ScatterMapBoxLib.Marker
 @using ModeFlag = Plotly.Blazor.Traces.ScatterMapBoxLib.ModeFlag
 @using Title = Plotly.Blazor.LayoutLib.ColorAxisLib.ColorBarLib.Title
+@using YAnchorEnum = Plotly.Blazor.LayoutLib.LegendLib.YAnchorEnum
+@using XAnchorEnum = Plotly.Blazor.LayoutLib.LegendLib.XAnchorEnum
 
-<PlotlyChart @ref="_plotlyChart" Style="height: 100vh; width: 100%" />
+<div style="width: 100%;">
+    <MudSelect HelperText="Basis Farbe" T="string" ValueChanged="BaseValueChanged" >
+        <MudSelectItem Value="@("buildingPermits")">Baugenehmigungen</MudSelectItem>
+        <MudSelectItem Value="@("landPrices")">Bodenpreise</MudSelectItem>
+        <MudSelectItem Value="@("householdIncome2019")">Haushaltseinkommen</MudSelectItem>
+        <MudSelectItem Value="@("consumerInsolvencies")">Insolvenzen</MudSelectItem>
+    </MudSelect>
+    <MudSelect HelperText="Scatter Farbe" T="string" ValueChanged="OverlayColorValueChanged" >
+        <MudSelectItem Value="@("priceTrend")">Preistrend</MudSelectItem>
+        <MudSelectItem Value="@("totalRent")">Warmmiete</MudSelectItem>
+        <MudSelectItem Value="@("serviceCharge")">Nebenkosten</MudSelectItem>
+        <MudSelectItem Value="@("baseRent")">Kaltmiete</MudSelectItem>
+        <MudSelectItem Value="@("livingSpace")">Wohnungsgröße</MudSelectItem>
+        <MudSelectItem Value="@("noRooms")">Zimmeranzahl</MudSelectItem>
+        <MudSelectItem Value="@("noParkingSpaces")">Parkplätze</MudSelectItem>
+        <MudSelectItem Value="@("telekomUploadSpeed")">Bandbreite</MudSelectItem>
+        <MudSelectItem Value="@("yearConstructed")">Baujahr</MudSelectItem>
+        <MudSelectItem Value="@("pricepersqmbase")">QM kalt in €</MudSelectItem>
+        <MudSelectItem Value="@("pricepersqmservice")">QM NK in €</MudSelectItem>
+        <MudSelectItem Value="@("pricepersqmtotal")">QM warm in €</MudSelectItem>
+    </MudSelect>
+    <MudSelect HelperText="Scatter Größe" T="string" ValueChanged="OverlaySizeValueChanged" >
+        <MudSelectItem Value="@("priceTrend")">Preistrend</MudSelectItem>
+        <MudSelectItem Value="@("totalRent")">Warmmiete</MudSelectItem>
+        <MudSelectItem Value="@("serviceCharge")">Nebenkosten</MudSelectItem>
+        <MudSelectItem Value="@("baseRent")">Kaltmiete</MudSelectItem>
+        <MudSelectItem Value="@("livingSpace")">Wohnungsgröße</MudSelectItem>
+        <MudSelectItem Value="@("noRooms")">Zimmeranzahl</MudSelectItem>
+        <MudSelectItem Value="@("noParkingSpaces")">Parkplätze</MudSelectItem>
+        <MudSelectItem Value="@("telekomUploadSpeed")">Bandbreite</MudSelectItem>
+        <MudSelectItem Value="@("yearConstructed")">Baujahr</MudSelectItem>
+        <MudSelectItem Value="@("pricepersqmbase")">QM kalt in €</MudSelectItem>
+        <MudSelectItem Value="@("pricepersqmservice")">QM NK in €</MudSelectItem>
+        <MudSelectItem Value="@("pricepersqmtotal")">QM warm in €</MudSelectItem>
+    </MudSelect>
+    <MudSelect T="string"
+               HelperText="Farbe links"
+               ValueChanged="(x) => ColorChanged(x, 0)">
+        @foreach (var col in _colors)
+        {
+            <MudSelectItem Value="@col">@col</MudSelectItem>
+        }
+    </MudSelect>
+    <MudSelect T="string"
+               HelperText="Farbe rechts"
+               ValueChanged="(x) => ColorChanged(x, 1)">
+        @foreach (var col in _colors)
+        {
+            <MudSelectItem Value="@col">@col</MudSelectItem>
+        }
+    </MudSelect>
+    
+</div>
+
+
+<div style="@(_isInitDone ? "height: 90vh; width: 65vw; margin-right: 0; margin-left: auto;" : "display: none;")">
+    <PlotlyChart style="height: 90vh; width: 65vw!important; top: 0!important; position: absolute;" Id="TestId" @ref="_plotlyChart"/>
+</div>
+
+@if (_isInitDone == false)
+{
+    <div class="progress-info">
+        <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+        <MudText Style="padding-top: 20px;" Typo="Typo.h4">Rufe Daten ab...</MudText>
+    </div>
+}
 
 @code {
+    private string selectedColorValue = "";
+    [Inject]
+    public DataStatefulRepository StatefulRepository { get; set; }
     
     [Inject]
-    public DataStatefulRepository Repository { get; set; }
+    public Repository<GenericRegionsModel, GenericRegionsModel> RegionsRepository { get; set; }
+    
+    [Inject]
+    public Repository<ImmoRentGenericDataModel, ImmoRentGenericDataModel> ImmoDataRepository { get; set; }
     
     private const string Token = "pk.eyJ1IjoiaGFuc2VuYXVzYmVybGluIiwiYSI6ImNsZzRjNm51eDBvM3gzbHFlbzd1YzFucnQifQ.jZmB_ZdTHVkSlVddks7XfQ";
     private PlotlyChart _plotlyChart;
+    private bool _isInitDone;
+
+    private ScatterMapBox _scatterMap;
+    private ChoroplethMapBox _choromap;
+    //private List<GenericRegionsModel> _regionsDataModels;
+    
+    private List<string> _colors = new(){"lackbody","Bluered","Blues","Cividis","Earth",
+        "Electric","Greens","Greys","Hot","Jet","Picnic","Portland","Rainbow","RdBu",
+        "Reds","Viridis","YlGnBu","YlOrRd"};
 
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            var choroplethOverlayData = await Repository.GetRdbData();
-            var scatterOverlayData = await Repository.GetRentData();
-            var geoJsonData = await Repository.GetGeoJson();
-            //scatterOverlayData = scatterOverlayData.GetRange(0, 1000);
-            var zSeries = choroplethOverlayData.Select(x => (object)x.ConsumerInsolvencies).ToList();
-            var locSeries = choroplethOverlayData.Select(x => (object)x.AgsKey).ToList();
+            string url = "https://localhost:6001/regions";
+            RegionsRepository.Init(url);
+            url = "https://localhost:6001/rentdata";
+            ImmoDataRepository.Init(url);
+            //var choroplethOverlayData = await RegionsRepository.GetAll("consumerInsolvencies");
+            //var lonlatData = await ImmoDataRepository.GetAll("totalRent");
+            var geoJsonData = await StatefulRepository.GetGeoJson();
             
-            _plotlyChart.Config = new Config { MapboxAccessToken = Token };
+            _plotlyChart.Config = new Config
+            {
+                MapboxAccessToken = Token, 
+                //Responsive = true
+            };
             
-            var choromap =  new ChoroplethMapBox
+            _choromap =  new ChoroplethMapBox
             {
                 GeoJson = geoJsonData,
-                Z = zSeries,
-                Locations = locSeries,
+                //Z = new object[] {regionsDataModels.OrderBy(x => x.AgsKey).Select(x => x.GenericProperty).ToList()},
+                //Locations = new object[] {regionsDataModels.OrderBy(x => x.AgsKey).Select(x => x.AgsKey).ToList()},
                 FeatureIdKey = "properties.AGS",
                 ColorAxis = "coloraxis"
             };
 
-            var scatterMap = new ScatterMapBox
+            _scatterMap = new ScatterMapBox
             {
-                Lat = scatterOverlayData.Select(x => (object)x.Lat).ToList(),
-                Lon = scatterOverlayData.Select(x => (object)x.Lon).ToList(),
-                Mode = ModeFlag.Markers, Marker = new Marker
+                Mode = ModeFlag.Markers, 
+                Marker = new Marker
                 {
-                    ColorArray = scatterOverlayData.Select(x => (object)x.BaseRent).ToList(),
-                    SizeArray = scatterOverlayData.Select(x => (decimal)x.LivingSpace).ToList() as IList<decimal?>, 
                     ColorAxis = "coloraxis2"
-                    
-                }
-            };
+                }};
+
             
             _plotlyChart.Layout = new Layout
             {
+                Legend = new Legend()
+                {
+                    YAnchor = YAnchorEnum.Top,
+                    XAnchor = XAnchorEnum.Left,
+                    Y = 0.99m,
+                    X = 0.99m
+                },
                 MapBox = new List<MapBox>
                 {
                     new ()
                     {
-                        Style = "carto-positron", 
-                        Center = new Center { Lon = 10.4515m, Lat = 51.1657m },
+                        Style = "carto-positron",
+                        Center = new Center
+                        {
+                            Lon = 10.4515m, 
+                            Lat = 51.1657m
+                        },
                         Zoom = 5.5m
                     }
-                },
+                }, 
                 ColorAxis = new List<ColorAxis>
                 {
                     new()
                     {
-                        ColorScale = "Blues", 
+                        ColorScale = "Jet",
                         ShowScale = true, 
                         ColorBar = new ColorBar
                         {
-                            YAnchor = 0, Y = 1, X = -0.05m, Title = new Title
+                            YAnchor = 0,
+                            Y = 1, 
+                            X = -0.1m, 
+                            Title = new Title
                             {
                                 Text = "hello"
-                            }, 
+                            },
                             TickLabelPosition = TickLabelPositionEnum.OutsideLeft
                         }
                     },
@@ -93,7 +192,8 @@
                             TickLabelPosition = TickLabelPositionEnum.OutsideRight
                         }
                     }
-                }, ShowLegend = false, ModeBar = new ModeBar(){}
+                }, 
+                Height = 1000
             };
 
             try
@@ -105,10 +205,93 @@
             {
                 Console.WriteLine(e);
             }
-            await _plotlyChart.AddTrace(choromap);
-            await _plotlyChart.AddTrace(scatterMap);
+            
+            _plotlyChart.Config = new Config
+            {
+                MapboxAccessToken = Token,
+                //Responsive = true, 
+                DisplayLogo = false, 
+                DisplayModeBar = DisplayModeBarEnum.False, 
+                Editable = false
+            };
+            await _plotlyChart.AddTrace(_choromap);
+            await _plotlyChart.AddTrace(_scatterMap);
+            
+            await BaseValueChanged("consumerInsolvencies");
+            await OverlayColorValueChanged("baseRent");
+            await OverlaySizeValueChanged("baseRent");
+            //await _plotlyChart.NewPlot();
+            _isInitDone = true;
             StateHasChanged();
         }
     }
 
+    
+
+    private string _selectedOverlayColor = "";
+    private string _selectedOverlaySize = "";
+    private string _selectedBase = "";
+
+    private async Task OverlaySizeValueChanged(string val)
+    {
+        _isInitDone = false;
+        var scatterOverlayDataSize = await ImmoDataRepository.GetAll(val);
+        _scatterMap.Marker.SizeArray = scatterOverlayDataSize
+            .OrderBy(x => x.Id)
+            .Select(x => decimal
+                .Parse(x.GenericProperty))
+            .ToList() as IList<decimal?>;
+        AddLatLonOverlay(scatterOverlayDataSize);
+        await _plotlyChart.NewPlot();
+        _isInitDone = true;
+    }
+
+    private async Task OverlayColorValueChanged(string val)
+    {
+        _isInitDone = false;
+        var scatterOverlayDataColor = await ImmoDataRepository.GetAll(val);
+        _scatterMap.Marker.ColorArray = scatterOverlayDataColor
+            .OrderBy(x => x.Id)
+            .Select(x => (object) x.GenericProperty)
+            .ToList();
+        AddLatLonOverlay(scatterOverlayDataColor);
+        await _plotlyChart.NewPlot();
+        _isInitDone = true;
+    }
+
+    private void AddLatLonOverlay(List<ImmoRentGenericDataModel> values)
+    {
+        _scatterMap.Lat = values
+            .OrderBy(x => x.Id)
+            .Select(x => (object) x.Lat)
+            .ToList();
+        _scatterMap.Lon = values
+            .OrderBy(x => x.Id)
+            .Select(x => (object) x.Lon)
+            .ToList();
+    }
+    
+    private async Task BaseValueChanged(string val)
+    {
+        _isInitDone = false;
+        var choroplethOverlayData = await RegionsRepository.GetAll(val);
+        _choromap.Z = choroplethOverlayData
+            .OrderBy(x => x.AgsKey)
+            .Select(x => (object) x.GenericProperty)
+            .ToList();
+        _choromap.Locations = choroplethOverlayData
+            .OrderBy(x => x.AgsKey)
+            .Select(x => (object) x.AgsKey)
+            .ToList();
+        await _plotlyChart.NewPlot();
+        _isInitDone = true;
+    }
+
+    private async Task ColorChanged(string toColor, int index)
+    {
+        _plotlyChart.Layout.ColorAxis[index].ColorScale = toColor;
+        await _plotlyChart.Update();
+        await InvokeAsync(StateHasChanged);
+    }
+    
 }

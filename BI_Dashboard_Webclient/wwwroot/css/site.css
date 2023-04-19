@@ -49,3 +49,31 @@ h1:focus {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+
+.progress-info{
+    height: 100%;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    padding-top: 15%;
+}
+
+.dashboard-card{
+    font-size: 3rem;
+    display: flex;
+    height: 100%;
+    align-items: center;
+    padding-left: 6px;
+    width: 100%;
+}
+
+
+.dashboard-card-merged{
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    padding-left: 6px;
+    width: 100%;
+    margin-top: 15px;
+}

@@ -1,0 +1,23 @@
+﻿<MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
+    <div class="dashboard-card">
+        <MudIcon Style="font-size: 5.5rem;" 
+                 Icon="@Icon" 
+                 Color="Color.Primary"/>
+        <div style="margin-left: 10px;">
+            <p style="font-size: 1rem; line-height: 1;">@Name</p>
+            <h3 style="line-height: 1.1;">@Value</h3>
+        </div>
+    </div>
+</MudPaper>
+
+@code
+{
+    [Parameter]
+    public string Name { get; set; }
+    
+    [Parameter]
+    public string Value { get; set; }
+
+    [Parameter]
+    public string Icon { get; set; } = Icons.Material.Filled.Outbound;
+}

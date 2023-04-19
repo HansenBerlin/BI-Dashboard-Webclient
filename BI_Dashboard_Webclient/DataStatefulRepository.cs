@@ -1,17 +1,18 @@
 ﻿using System.Text.Json;
+using BI_Core;
 
 namespace BI_Dashboard_Webclient;
 
 public class DataStatefulRepository
 {
-    private readonly CsvParser<RdbDataModel> _parserRdb;
+    private readonly CsvParser<RegionsDataModel> _parserRdb;
     private readonly CsvParser<ImmoRentDataModel> _parserRent;
     private readonly IWebHostEnvironment _environment;
-    private List<RdbDataModel>? _rdbData;
+    private List<RegionsDataModel>? _rdbData;
     private List<ImmoRentDataModel>? _immoRentData;
     private object? _geoJson;
     
-    public DataStatefulRepository(CsvParser<RdbDataModel> parserRdb, CsvParser<ImmoRentDataModel> parserRent, IWebHostEnvironment environment)
+    public DataStatefulRepository(CsvParser<RegionsDataModel> parserRdb, CsvParser<ImmoRentDataModel> parserRent, IWebHostEnvironment environment)
     {
         _parserRdb = parserRdb;
         _parserRent = parserRent;
@@ -30,7 +31,7 @@ public class DataStatefulRepository
         return _geoJson ?? new object();
     }
 
-    public async Task<List<RdbDataModel>> GetRdbData()
+    public async Task<List<RegionsDataModel>> GetRdbData()
     {
         return _rdbData ??= await _parserRdb.ParseAsync();
     }

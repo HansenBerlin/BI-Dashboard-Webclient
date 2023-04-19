@@ -1,26 +1,41 @@
-﻿@using Plotly.Blazor.LayoutLib
-<PlotlyChart Id="TestId" @ref="_chart" Style="height: 90vh;" />
+﻿@page "/plots"
+@using Plotly.Blazor.LayoutLib
+@using Plotly.Blazor.ConfigLib
+@using BI_Core
+
+
+<MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False" Style="padding-top: 20px; margin-top: 20px!important;">
+    <div style="@(_isInitDone ? "" : "display: none;")">
+        <PlotlyChart style="height: 80vh; width: 80vw;" Id="TestId" @ref="_chart"/>
+    </div>
+    @if (_isInitDone == false)
+    {
+        <div class="progress-info">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+            <MudText Style="padding-top: 20px;" Typo="Typo.h4">Rufe Daten ab...</MudText>
+        </div>
+    }
+</MudContainer>
+
 
 @code
 {
     [Inject]
-    public DataStatefulRepository Repository { get; set; }
+    public Repository<ImmoRentDataModelBase, ImmoRentDataModelBase> Repository { get; set; }
     
     PlotlyChart _chart;
 
     readonly Config _config = new()
     {
-        Responsive = true
+        Responsive = true, 
+        DisplayLogo = false, 
+        DisplayModeBar = DisplayModeBarEnum.False, 
+        Editable = false
     };
 
     readonly Layout _layout = new()
     {
-        Title = new Title
-        {
-            Text = "Bar"
-        },
-        //BarMode = BarModeEnum.Stack,
-        BarMode = BarModeEnum.Relative, 
+        BarMode = BarModeEnum.Stack, 
         BarGap = 0,
         Height = 800
     };
@@ -28,12 +43,16 @@
     List<ITrace> _data = new();
     List<object> _years = new();
     List<List<object>> _heating = new();
+    bool _isInitDone;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            var rentData = await Repository.GetRentData();
+            
+            string url = "https://localhost:6001/rentdata";
+            Repository.Init(url);
+            var rentData = await Repository.GetAll();
             var years = rentData
                 .Select(x => x.YearConstructed)
                 .Where(x => x > 1880)
@@ -63,7 +82,7 @@
             //_data = new List<ITrace>();
             try
             {
-                await _chart.Relayout();
+                //await _chart.Relayout();
             }
             catch (Exception e)
             {
@@ -80,8 +99,9 @@
                 await _chart.AddTrace(trace);
             }
 
-            //await _chart.Update();
+            await _chart.Update();
             //await _chart.AddTrace(_data[1]);
+            _isInitDone = true;
             StateHasChanged();
         }
     }

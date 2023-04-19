@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using BI_Core;
 
 namespace BI_Dashboard_Webclient;
 
@@ -34,7 +35,7 @@ public class CsvParser<T>
     private string GetPath(IWebHostEnvironment environment)
     {
         string file = "";
-        if (_type == typeof(RdbDataModel))
+        if (_type == typeof(RegionsDataModel))
         {
             file = "merged_bau_einkommen_insolvenz.csv";
         }
@@ -69,50 +70,3 @@ public class CsvParser<T>
         return model;
     }
 }
-
-
-public class RdbDataModel
-{
-    public string AgsKey { get; set; }
-    public double BuildingPermits { get; set; }
-    public double LandPrices { get; set; }
-    public double HouseholdIncome2019 { get; set; }
-    public double ConsumerInsolvencies { get; set; }
-}
-
-public class ImmoBuyDataModel
-{
-    
-}
-
-public class ImmoRentDataModel
-{
-    public int Id { get; set; }
-    public double PriceTrend { get; set; }
-    public double TotalRent { get; set; }
-    public double ServiceCharge { get; set; }
-    public double BaseRent { get; set; }
-    public double LivingSpace { get; set; }
-    public int NoRooms { get; set; }
-    public int NoParkSpaces { get; set; }
-    public int Balcony { get; set; }
-    public int HasKitchen { get; set; }
-    public int Cellar { get; set; }
-    public string Condition { get; set; }
-    public string InteriorQual { get; set; }
-    public int Lift { get; set; }
-    public string TypeOfFlat { get; set; }
-    public double TelekomUploadSpeed { get; set; }
-    public int Floor { get; set; }
-    public int Garden { get; set; }
-    public string HeatingType { get; set; }
-    public string FiringTypes { get; set; }
-    public int YearConstructed { get; set; }
-    public double Lon { get; set; }
-    public double Lat { get; set; }
-    public double PricePerSqMBase { get; set; }
-    public double PricePerSqMService { get; set; }
-    public double PricePerSqMTotal { get; set; }
-}
-
-
