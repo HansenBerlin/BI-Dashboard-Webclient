@@ -1,14 +1,14 @@
 ﻿using System.Diagnostics;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text.Json;
 using BI_Core;
-using MudBlazor;
 
-namespace BI_Dashboard_Webclient;
+namespace Infrastructure;
 
 
-public class Repository<TResponse>
-    where TResponse : ResponseBase, new()
+public class Repository<T>
+    where T : ResponseBase, new()
 {
     private readonly HttpClient _httpClient;
     private readonly JsonSerializerOptions _options;
@@ -25,46 +25,46 @@ public class Repository<TResponse>
         _uri = url;
     }
 
-    public async Task<List<TResponse>> GetAll()
+    public async Task<List<T>> GetAll()
     {
         try
         {
-            var response = await _httpClient.GetFromJsonAsync<List<TResponse>>($"{_uri}", _options);
-            return response ?? Enumerable.Empty<TResponse>().ToList();
+            var response = await _httpClient.GetFromJsonAsync<List<T>>($"{_uri}", _options);
+            return response ?? Enumerable.Empty<T>().ToList();
         }
         catch (Exception e) when (e is HttpRequestException or JsonException)
         {
             Debug.WriteLine(e);
-            return new List<TResponse> {new() {IsResponseSuccess = false}};
+            return new List<T> {new() {IsResponseSuccess = false}};
         }
     }
     
-    public async Task<List<TResponse>> GetAll(string propertyName)
+    public async Task<List<T>> GetAll(string propertyName)
     {
         try
         {
             var response = await _httpClient
-                .GetFromJsonAsync<List<TResponse>>($"{_uri}/{propertyName}", _options);
-            return response ?? Enumerable.Empty<TResponse>().ToList();
+                .GetFromJsonAsync<List<T>>($"{_uri}/{propertyName}", _options);
+            return response ?? Enumerable.Empty<T>().ToList();
         }
         catch (Exception e) when (e is HttpRequestException or JsonException)
         {
             Debug.WriteLine(e);
-            return new List<TResponse> {new() {IsResponseSuccess = false}};
+            return new List<T> {new() {IsResponseSuccess = false}};
         }
     }
 
-    public async Task<TResponse> Get(string id)
+    public async Task<T> Get(string id)
     {
         try
         {
-            var response = await _httpClient.GetFromJsonAsync<TResponse>($"{_uri}/{id}", _options);
-            return response ?? new TResponse();
+            var response = await _httpClient.GetFromJsonAsync<T>($"{_uri}/{id}", _options);
+            return response ?? new T();
         }
         catch (Exception e) when (e is HttpRequestException or JsonException)
         {
             Debug.WriteLine(e);
-            return new TResponse
+            return new T
             {
                 IsResponseSuccess = false
             };

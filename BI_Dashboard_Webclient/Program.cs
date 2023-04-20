@@ -20,6 +20,7 @@ builder.Services.AddSingleton<Repository<RegionsDataModel>>();
 builder.Services.AddSingleton<Repository<GenericRegionsModel>>();
 builder.Services.AddSingleton<Repository<Location>>();
 builder.Services.AddSingleton<Repository<ScoresModelInfo>>();
+builder.Services.AddSingleton<PredictionService>();
 builder.Services.AddSingleton<OSMRequestService>();
 builder.Services.AddMudServices();
 

@@ -18,7 +18,10 @@ public class OSMRequestService
 
     public async Task<Location> Get(AddressModel address)
     {
-        string endpoint = $"{address.Street}+{address.StreetNumber}+{address.PostalCode}+{address.City}+germany";
+        string endpoint = $"{address.Street}{(address.Street == "" ? "" : "+")}" +
+                          $"{address.StreetNumber}{(address.StreetNumber == "" ? "" : "+")}" +
+                          $"{address.PostalCode}{(address.PostalCode == "" ? "" : "+")}" +
+                          $"{address.City}+germany";
         string url = $"{BaseUrl}{endpoint}{UrlEnd}";
         using var request = new HttpRequestMessage(HttpMethod.Get, url);
         using var response = await _client.SendAsync(request);

@@ -5,5 +5,6 @@ namespace BI_Core;
 
 public class ResponseBase
 {
-    [JsonIgnore] public bool IsResponseSuccess { get; init; } = true;
+    [JsonIgnore] 
+    public bool IsResponseSuccess { get; init; } = true;
 }

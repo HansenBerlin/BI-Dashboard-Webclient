@@ -1,65 +1,161 @@
 ﻿@page "/prediction"
 
 @using BI_Core
+@using Infrastructure
 
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
-    <MudCard Style="width: 400px;">
-        <MudForm Model="@model" @ref="@form">
-            <MudCardContent>
-                <MudNumericField Label="Anzahl Zimmer" 
-                                 @bind-Value="model.NoRooms"  
-                                 Min="1" Max="10" />
-                <MudNumericField Label="Wohnfläche" 
-                                 @bind-Value="model.LivingSpace"  
-                                 Min="10" Max="250" />
-                <MudNumericField Label="Baujahr" 
-                                 @bind-Value="model.YearConstructed"  
-                                 Min="1880" Max=@DateTime.Now.Year />
-                <MudSelect T="Condition" bind-Value="model.Condition">
-                    @foreach (var val in Enum.GetValuesAsUnderlyingType(typeof(Condition)))
-                    {
-                        <MudSelectItem Value="(Condition)val"/>
-                    }
-                </MudSelect>
-                <MudSelect T="InteriorQuality" bind-Value="model.InteriorQual">
-                    @foreach (var val in Enum.GetValuesAsUnderlyingType(typeof(InteriorQuality)))
-                    {
-                        <MudSelectItem Value="(InteriorQuality)val"/>
-                    }
-                </MudSelect>
-                <MudSelect T="TypeOfFlat" bind-Value="model.TypeOfFlat">
-                    @foreach (var val in Enum.GetValuesAsUnderlyingType(typeof(TypeOfFlat)))
-                    {
-                        <MudSelectItem Value="(TypeOfFlat)val"/>
-                    }
-                </MudSelect>
-                <MudSelect T="Heating" bind-Value="model.HeatingType">
-                    @foreach (var val in Enum.GetValuesAsUnderlyingType(typeof(Heating)))
-                    {
-                        <MudSelectItem Value="(Heating)val"/>
-                    }
-                </MudSelect>
-            </MudCardContent>
-        </MudForm>
-        <MudCardActions>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Order</MudButton>
-        </MudCardActions>
-    </MudCard>
+    <MudText Typo="Typo.h2">ML gestützte Preisvorhersage</MudText>
+    <MudGrid Style="margin-top: 30px;">
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Style="width: 400px; height: 100%;">
+                <MudForm Model="_address" @ref="@_addressForm">
+                    <MudCardContent>
+                        <MudTextField Label="Straße"
+                                      @bind-Value="_address.Street"/>
+                        <MudTextField Label="Hausnummer"
+                                      @bind-Value="_address.StreetNumber"/>
+                        <MudTextField Label="PLZ"
+                                      @bind-Value="_address.PostalCode"
+                                      MaxLength="5"/>
+                        <MudTextField Label="Ort"
+                                      Required="true"
+                                      @bind-Value="_address.City"/>
+                    </MudCardContent>
+                </MudForm>
+                <MudCardActions Style="padding: 16px;">
+                    <MudButton
+                        Style="width: 100%;"
+                        Variant="Variant.Filled"
+                        Color="Color.Primary"
+                        Class="ml-auto"
+                        OnClick="@(async () => await Submit())">
+                        Koordinaten abrufen
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Style="width: 400px;">
+                <MudForm Model="@_request">
+                    <MudCardContent>
+                        <MudNumericField Label="Anzahl Zimmer"
+                                         @bind-Value="_request.NoRooms"
+                                         Min="1"
+                                         Max="10"/>
+                        <MudNumericField Label="Wohnfläche"
+                                         @bind-Value="_request.LivingSpace"
+                                         Min="10"
+                                         Max="250"/>
+                        <MudNumericField Label="Baujahr"
+                                         @bind-Value="_request.YearConstructed"
+                                         Min="1880"
+                                         Max=@DateTime.Now.Year />
+                        <MudSelect T="int" @bind-Value="@_request.Condition" Label="Zustand" Text="@Condition.FirstTimeUse.ToString()">
+                            @foreach (var val in Enum.GetValuesAsUnderlyingType(typeof(Condition)))
+                            {
+                                <MudSelectItem Value="@((int) val)">@((Condition) val)</MudSelectItem>
+                            }
+                        </MudSelect>
+                        <MudSelect T="int" @bind-Value="@_request.InteriorQual" Label="Innenausstattung" Text="@InteriorQuality.Normal.ToString()">
+                            @foreach (var val in Enum.GetValuesAsUnderlyingType(typeof(InteriorQuality)))
+                            {
+                                <MudSelectItem Value="@((int) val)">@((InteriorQuality) val)</MudSelectItem>
+                            }
+                        </MudSelect>
+                        <MudSelect T="int" @bind-Value="@_request.TypeOfFlat" Label="Wohnungstyp" Text="@TypeOfFlat.Apartment.ToString()">
+                            @foreach (var val in Enum.GetValuesAsUnderlyingType(typeof(TypeOfFlat)))
+                            {
+                                <MudSelectItem Value="@((int) val)">@((TypeOfFlat) val)</MudSelectItem>
+                            }
+                        </MudSelect>
+                        <MudSelect T="int" @bind-Value="@_request.HeatingType" Label="Heizungstyp" Text="@Heating.CentralHeating.ToString()">
+                            @foreach (var val in Enum.GetValuesAsUnderlyingType(typeof(Heating)))
+                            {
+                                <MudSelectItem Value="@((int) val)">@((Heating) val)</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudCardContent>
+                </MudForm>
+                <MudCardActions Style="padding: 16px;">
+                    <MudButton
+                        Style="width: 100%;"
+                        Variant="Variant.Filled"
+                        Color="Color.Primary"
+                        Class="ml-auto"
+                        OnClick="Predict">
+                        PREDICT
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 100%; justify-content: center; display: grid;">
+                <div class="dashboard-card">
+                    <MudIcon Style="font-size: 5.5rem;" 
+                             Icon="@Icons.Material.Filled.Money" 
+                             Color="Color.Primary"/>
+                    <div style="margin-left: 10px;">
+                        <p style="font-size: 1rem; line-height: 1;">Voraussichtliche Kaltmiete</p>
+                        @if (score > 0)
+                        {
+                            <div class="score-value">
+                                <h3 style="line-height: 1.1;">@score €</h3>
+                            </div>
+                        }
+                        else
+                        {
+                            <h3 style="line-height: 1.1;">-</h3>
+                            
+                        }
+                    </div>
+                </div>
+            </MudPaper> 
+        </MudItem>
+    </MudGrid>
 </MudContainer>
 
 @code {
-	[Inject] ISnackbar Snackbar { get; set; }
+    
+	[Inject] 
+	ISnackbar Snackbar { get; set; }
+    
+    [Inject]
+    public OSMRequestService CoordinatesRequestService { get; set; }
+    
+    [Inject]
+    public PredictionService Repository { get; set; }
 
-    MudForm form;
-    PredictionRequestModel model = new();
+    readonly PredictionRequestModel _request = new();
+    readonly AddressModel _address = new();
+    private MudForm _addressForm; 
+    private MudForm _requestForm;
+    private int score;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            string url = "http://localhost:5000/predict";
+            Repository.Init(url);
+        }
+    }
+
+    private async Task Predict()
+    {
+        score = 0;
+        var response = await Repository.Post(_request);
+        score = (int)response.Score;
+    }
 
     private async Task Submit()
     {
-        await form.Validate();
-
-        if (form.IsValid)
+        await _addressForm.Validate();
+        if (_addressForm.IsValid)
         {
-            Snackbar.Add("Submited!");
+            var coordinates = await CoordinatesRequestService.Get(_address);
+            _request.Lat = coordinates.Lat;
+            _request.Lon = coordinates.Lon;
+            Snackbar.Add($"Found Lat: {coordinates.Lat} and Lon: {coordinates.Lon}");
         }
     }
 }
