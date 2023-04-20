@@ -85,10 +85,10 @@
     public DataStatefulRepository StatefulRepository { get; set; }
     
     [Inject]
-    public Repository<GenericRegionsModel, GenericRegionsModel> RegionsRepository { get; set; }
+    public Repository<GenericRegionsModel> RegionsRepository { get; set; }
     
     [Inject]
-    public Repository<ImmoRentGenericDataModel, ImmoRentGenericDataModel> ImmoDataRepository { get; set; }
+    public Repository<ImmoRentGenericDataModel> ImmoDataRepository { get; set; }
     
     private const string Token = "pk.eyJ1IjoiaGFuc2VuYXVzYmVybGluIiwiYSI6ImNsZzRjNm51eDBvM3gzbHFlbzd1YzFucnQifQ.jZmB_ZdTHVkSlVddks7XfQ";
     private PlotlyChart _plotlyChart;
@@ -135,7 +135,7 @@
                 Mode = ModeFlag.Markers, 
                 Marker = new Marker
                 {
-                    ColorAxis = "coloraxis2"
+                    ColorAxis = "coloraxis2", 
                 }};
 
             
@@ -219,7 +219,7 @@
             
             await BaseValueChanged("consumerInsolvencies");
             await OverlayColorValueChanged("baseRent");
-            await OverlaySizeValueChanged("baseRent");
+            //await OverlaySizeValueChanged("baseRent");
             //await _plotlyChart.NewPlot();
             _isInitDone = true;
             StateHasChanged();
@@ -254,6 +254,13 @@
             .OrderBy(x => x.Id)
             .Select(x => (object) x.GenericProperty)
             .ToList();
+        
+        (double min, double max) = CalculateMinMax(scatterOverlayDataColor
+            .Select(x => double.Parse(x.GenericProperty))
+            .ToList());
+
+        _scatterMap.Marker.CMax = (decimal)max;
+        _scatterMap.Marker.CMin = (decimal)min;
         AddLatLonOverlay(scatterOverlayDataColor);
         await _plotlyChart.NewPlot();
         _isInitDone = true;
@@ -275,6 +282,15 @@
     {
         _isInitDone = false;
         var choroplethOverlayData = await RegionsRepository.GetAll(val);
+        
+        (double min, double max) = CalculateMinMax(choroplethOverlayData
+            .Select(x => double.Parse(x.GenericProperty))
+            .ToList());
+        _choromap.ZMin = (decimal)min;
+        _choromap.ZMax = (decimal)max;
+
+        await _plotlyChart.Update();
+        
         _choromap.Z = choroplethOverlayData
             .OrderBy(x => x.AgsKey)
             .Select(x => (object) x.GenericProperty)
@@ -283,6 +299,7 @@
             .OrderBy(x => x.AgsKey)
             .Select(x => (object) x.AgsKey)
             .ToList();
+
         await _plotlyChart.NewPlot();
         _isInitDone = true;
     }
@@ -293,5 +310,27 @@
         await _plotlyChart.Update();
         await InvokeAsync(StateHasChanged);
     }
+
+    private (double min, double max) CalculateMinMax(List<double> values)
+    {
+        double median = CalculateMedian(values);
+        var max = values.Max(x => x);
+        var min = values.Min(x => x);
+        max = median * 1.5 < max ? median * 1.5 : max;
+        return (min, max);
+    }
+    
+    private double CalculateMedian(List<double> values)
+    {
+        int count = values.Count;
+        if (count == 0) 
+            return 0;
+
+        values.Sort();
+        int mid = count / 2;
+        double median = (count % 2 != 0) ? values[mid] : (values[mid - 1] + values[mid]) / 2.0;
+        return median;
+    }
+
     
 }

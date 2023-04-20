@@ -16,6 +16,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\BI_Core\BI_Core.csproj" />
+      <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,0 +1,112 @@
+﻿@page "/performers"
+@using BI_Core
+
+<style>
+
+        .selected > td {
+            color: white !important;
+        }
+            </style>
+
+<MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
+    <MudText Typo="Typo.h2">Top & Flop</MudText>
+    <MudGrid Style="margin-top: 30px;">
+        <MudItem xs="12" sm="6" md="6">
+            <MudText Typo="Typo.h4">Flop 5</MudText>
+            <MudTable Items="@ElementsTop" Hover="true"
+                      Breakpoint="Breakpoint.Sm" @ref="mudTable"
+                      RowClassFunc="@SelectedRowClassFunc"
+                      OnRowClick="RowClickEvent" T="ScoresModelInfo">
+                <HeaderContent>
+                    <MudTh>Id</MudTh>
+                    <MudTh>Score</MudTh>
+                    <MudTh>QM Preis kalt</MudTh>
+                    <MudTh>QM Größe</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Nr">@context.Id.ToString()</MudTd>
+                    <MudTd DataLabel="Id">@context.Score.ToString()</MudTd>
+                    <MudTd DataLabel="Score">@context.PricePerSqmBase.ToString("C2")</MudTd>
+                    <MudTd DataLabel="Score">@context.LivingSpace.ToString()</MudTd>
+                </RowTemplate>
+            </MudTable>
+            <p> @_scoresModel.Condition </p>
+            <p> @_scoresModel.HeatingType </p>
+            <p> @_scoresModel.InteriorQual </p>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="6">
+            <MudText Typo="Typo.h4">Flop 5</MudText>
+            <MudTable Items="@ElementsFlop" Hover="true"
+                      Breakpoint="Breakpoint.Sm" @ref="mudTable"
+                      RowClassFunc="@SelectedRowClassFunc"
+                      OnRowClick="RowClickEvent" T="ScoresModelInfo">
+                <HeaderContent>
+                    <MudTh>Id</MudTh>
+                    <MudTh>Score</MudTh>
+                    <MudTh>QM Preis kalt</MudTh>
+                    <MudTh>QM Größe</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Nr">@context.Id.ToString()</MudTd>
+                    <MudTd DataLabel="Id">@context.Score.ToString()</MudTd>
+                    <MudTd DataLabel="Score">@context.PricePerSqmBase.ToString("C2")</MudTd>
+                    <MudTd DataLabel="Score">@context.LivingSpace.ToString()</MudTd>
+                </RowTemplate>
+            </MudTable>
+            <p> @_scoresModel.Condition </p>
+            <p> @_scoresModel.HeatingType </p>
+            <p> @_scoresModel.InteriorQual </p>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+   
+@code {
+    
+    [Inject]
+    public Repository<ScoresModelInfo> Repository { get; set; }
+
+    private int selectedRowNumber = -1;
+    private MudTable<ScoresModelInfo> mudTable;
+    private List<string> clickedEvents = new();
+    private IEnumerable<ScoresModelInfo> ElementsTop = new List<ScoresModelInfo>();
+    private IEnumerable<ScoresModelInfo> ElementsFlop = new List<ScoresModelInfo>();
+    private ScoresModelInfo _scoresModel = new();
+    
+    private void RowClickEvent(TableRowClickEventArgs<ScoresModelInfo> tableRowClickEventArgs)
+    {
+        _scoresModel = tableRowClickEventArgs.Item;
+
+    }
+
+    private string SelectedRowClassFunc(ScoresModelInfo element, int rowNumber)
+    {
+        if (selectedRowNumber == rowNumber)
+        {
+            selectedRowNumber = -1;
+            clickedEvents.Add("Selected Row: None");
+            return string.Empty;
+        }
+        if (mudTable.SelectedItem != null && mudTable.SelectedItem.Equals(element))
+        {
+            selectedRowNumber = rowNumber;
+            clickedEvents.Add($"Selected Row: {rowNumber}");
+            return "selected";
+        }
+        return string.Empty;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            const string url = "https://localhost:6001/rentdata/scores/info";
+            Repository.Init(url);
+            ElementsTop = await Repository.GetAll("true");
+            var response = await Repository.GetAll("false");
+            ElementsFlop = response.OrderByDescending(x => x.Score);
+            StateHasChanged();
+        }
+    }
+
+}

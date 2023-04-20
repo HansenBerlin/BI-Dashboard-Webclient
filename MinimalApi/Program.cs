@@ -1,7 +1,6 @@
 using System.Data;
 using BI_Core;
 using Dapper;
-using MinimalApi;
 using MySqlConnector;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,7 +11,6 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<GetConnection>(sp => 
     async () =>
     {
-
         string connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
                                   ?? throw new InvalidOperationException();
         var connection = new MySqlConnection(connectionString);
@@ -71,6 +69,28 @@ app.MapGet("/rentdata/{name}", async (GetConnection connectionGetter, string nam
     })
     .WithOpenApi();
 
+
+app.MapGet("/rentdata/scores/geo", async (GetConnection connectionGetter) =>
+    {
+        using var con = await connectionGetter();
+        var data = await con.QueryAsync<Location>(
+            $"SELECT * FROM rent_aggregates");
+        return data.ToList().Count > 0 ? Results.Ok(data.ToList()) : Results.NoContent();
+    })
+    .WithOpenApi();
+
+
+app.MapGet("/rentdata/scores/info/{top}", async (GetConnection connectionGetter, bool top) =>
+    {
+        using var con = await connectionGetter();
+        string append = top ? "desc" : "asc";
+        var data = await con.QueryAsync<ScoresModelInfo>(
+            $"SELECT * FROM rent_aggregates_info order by score {append} limit 5");
+        return data.ToList().Count > 0 ? Results.Ok(data.ToList()) : Results.NoContent();
+    })
+    .WithOpenApi();
+
+
 app.MapGet("/regions/{name}", async (GetConnection connectionGetter, string name) =>
     {
         using var con = await connectionGetter();
@@ -123,13 +143,6 @@ app.MapGet("/rentdata/dashboard", async (GetConnection connectionGetter) =>
     })
     .WithOpenApi();
 
-
-
 app.Run();
 
-
-
-namespace MinimalApi
-{
-    public delegate Task<IDbConnection> GetConnection();
-}
+public delegate Task<IDbConnection> GetConnection();

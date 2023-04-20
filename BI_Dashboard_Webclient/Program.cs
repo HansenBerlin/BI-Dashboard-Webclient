@@ -1,5 +1,6 @@
 using BI_Core;
 using BI_Dashboard_Webclient;
+using Infrastructure;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,11 +13,14 @@ builder.Services.AddScoped<CsvParser<RegionsDataModel>>();
 builder.Services.AddScoped<CsvParser<ImmoRentDataModel>>();
 builder.Services.AddScoped<CsvParser<ImmoBuyDataModel>>();
 builder.Services.AddScoped<DataStatefulRepository>();
-builder.Services.AddSingleton<Repository<ImmoRentDataModelBase, ImmoRentDataModelBase>>();
-builder.Services.AddSingleton<Repository<ImmoRentGenericDataModel, ImmoRentGenericDataModel>>();
-builder.Services.AddSingleton<Repository<RentDashboardModel, RentDashboardModel>>();
-builder.Services.AddSingleton<Repository<RegionsDataModel, RegionsDataModel>>();
-builder.Services.AddSingleton<Repository<GenericRegionsModel, GenericRegionsModel>>();
+builder.Services.AddSingleton<Repository<ImmoRentDataModelBase>>();
+builder.Services.AddSingleton<Repository<ImmoRentGenericDataModel>>();
+builder.Services.AddSingleton<Repository<RentDashboardModel>>();
+builder.Services.AddSingleton<Repository<RegionsDataModel>>();
+builder.Services.AddSingleton<Repository<GenericRegionsModel>>();
+builder.Services.AddSingleton<Repository<Location>>();
+builder.Services.AddSingleton<Repository<ScoresModelInfo>>();
+builder.Services.AddSingleton<OSMRequestService>();
 builder.Services.AddMudServices();
 
 

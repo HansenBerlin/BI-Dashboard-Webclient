@@ -1,0 +1,65 @@
+﻿@page "/prediction"
+
+@using BI_Core
+
+<MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
+    <MudCard Style="width: 400px;">
+        <MudForm Model="@model" @ref="@form">
+            <MudCardContent>
+                <MudNumericField Label="Anzahl Zimmer" 
+                                 @bind-Value="model.NoRooms"  
+                                 Min="1" Max="10" />
+                <MudNumericField Label="Wohnfläche" 
+                                 @bind-Value="model.LivingSpace"  
+                                 Min="10" Max="250" />
+                <MudNumericField Label="Baujahr" 
+                                 @bind-Value="model.YearConstructed"  
+                                 Min="1880" Max=@DateTime.Now.Year />
+                <MudSelect T="Condition" bind-Value="model.Condition">
+                    @foreach (var val in Enum.GetValuesAsUnderlyingType(typeof(Condition)))
+                    {
+                        <MudSelectItem Value="(Condition)val"/>
+                    }
+                </MudSelect>
+                <MudSelect T="InteriorQuality" bind-Value="model.InteriorQual">
+                    @foreach (var val in Enum.GetValuesAsUnderlyingType(typeof(InteriorQuality)))
+                    {
+                        <MudSelectItem Value="(InteriorQuality)val"/>
+                    }
+                </MudSelect>
+                <MudSelect T="TypeOfFlat" bind-Value="model.TypeOfFlat">
+                    @foreach (var val in Enum.GetValuesAsUnderlyingType(typeof(TypeOfFlat)))
+                    {
+                        <MudSelectItem Value="(TypeOfFlat)val"/>
+                    }
+                </MudSelect>
+                <MudSelect T="Heating" bind-Value="model.HeatingType">
+                    @foreach (var val in Enum.GetValuesAsUnderlyingType(typeof(Heating)))
+                    {
+                        <MudSelectItem Value="(Heating)val"/>
+                    }
+                </MudSelect>
+            </MudCardContent>
+        </MudForm>
+        <MudCardActions>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Order</MudButton>
+        </MudCardActions>
+    </MudCard>
+</MudContainer>
+
+@code {
+	[Inject] ISnackbar Snackbar { get; set; }
+
+    MudForm form;
+    PredictionRequestModel model = new();
+
+    private async Task Submit()
+    {
+        await form.Validate();
+
+        if (form.IsValid)
+        {
+            Snackbar.Add("Submited!");
+        }
+    }
+}
