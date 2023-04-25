@@ -34,7 +34,8 @@ create table immoscout_buy
     lat                    double     null,
     lon                    double     null,
     pricepersqmlivingspace double     null,
-    pricepersqmlotarea     double     null
+    pricepersqmlotarea     double     null,
+    agskey                 varchar(5) null
 );
 
 create index idx_id_immoscout_buy
