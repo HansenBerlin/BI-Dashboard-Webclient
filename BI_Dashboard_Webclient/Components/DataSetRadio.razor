@@ -1,0 +1,12 @@
+﻿@using BI_Core.Enums
+<MudItem xs="12" md="1">
+    <MudRadioGroup SelectedOption="DataSet.Rent" SelectedOptionChanged="async x => await DataSetSelectionHasChanged.InvokeAsync(x)" T="DataSet">
+        <MudRadio Size="Size.Small" Dense="true" Option="@DataSet.Rent" Color="Color.Primary" UnCheckedColor="Color.Default">Mietbestand</MudRadio>
+        <MudRadio Size="Size.Small" Dense="true" Option="@DataSet.Buy" Color="Color.Primary" UnCheckedColor="Color.Default">Kaufangebote</MudRadio>
+        @if (ShowAggregateOptions)
+        {
+            <MudRadio Size="Size.Small" Dense="true" Option="@DataSet.Economic" Color="Color.Primary" UnCheckedColor="Color.Default">Wirtschaft</MudRadio>
+            <MudRadio Size="Size.Small" Dense="true" Option="@DataSet.Demographic" Color="Color.Primary" UnCheckedColor="Color.Default">Demografisch</MudRadio>
+        }
+    </MudRadioGroup>
+</MudItem>

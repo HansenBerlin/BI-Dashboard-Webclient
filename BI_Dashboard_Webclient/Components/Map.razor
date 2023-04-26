@@ -1,0 +1,100 @@
+﻿@page "/maps"
+@using System.Linq
+@using BI_Core
+@using BI_Core.Enums
+@using Infrastructure
+
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" 
+              Style="display: flex; margin: 0!important; padding: 0!important;">
+    @if (false)
+    {
+        <div style="width: 25vw; padding: 20px; min-width: 340px; display: flex; flex-direction: column; gap: 20px;">
+            <MudCard Style="padding: 20px;" Outlined="@true">
+                <MudCardHeader Style="padding: 10px;">
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Aggregierte Daten</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent Style="padding: 0 16px 0 16px;">
+                    <DataSetRadio
+                        ShowAggregateOptions="true"
+                        DataSetSelectionHasChanged="async x => await DatasetSelectionChangedCallback(x, true)"/>
+                    @switch (_selectedAggregateDataset)
+                    {
+                        case DataSet.Rent:
+                            <Dropdown DataType="@DataType.RentNumerical" SelectedValueHasChanged="@BaseValueChanged"/>
+                            break;
+                        case DataSet.Buy:
+                            <Dropdown DataType="@DataType.BuyNumerical" SelectedValueHasChanged="@BaseValueChanged"/>
+                            break;
+                        case DataSet.Economic:
+                            <Dropdown DataType="@DataType.Regional" SelectedValueHasChanged="@BaseValueChanged"/>
+                            break;
+                        case DataSet.Demographic:
+                            <Dropdown DataType="@DataType.Demographic" SelectedValueHasChanged="@BaseValueChanged"/>
+                            break;
+                    }
+                </MudCardContent>
+            </MudCard>
+            <MudCard Style="padding: 20px;" Outlined="@true">
+                <MudCardHeader Style="padding: 10px;">
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Scatter Daten</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent Style="padding: 0 16px 0 16px;">
+                    <DataSetRadio
+                        ShowAggregateOptions="false"
+                        DataSetSelectionHasChanged="async x => await DatasetSelectionChangedCallback(x, false)"/>
+                    @switch (_selectedOverlayDataset)
+                    {
+                        case DataSet.Rent:
+                            <Dropdown DataType="@DataType.RentNumerical" 
+                                      SelectedValueHasChanged="@OverlayColorValueChanged"/>
+                            break;
+                        case DataSet.Buy:
+                            <Dropdown DataType="@DataType.BuyNumerical" 
+                                      SelectedValueHasChanged="@OverlayColorValueChanged"/>
+                            break;
+                    }
+                </MudCardContent>
+            </MudCard>
+            <MudCard Style="padding: 20px;" Outlined="@true">
+                <MudCardHeader Style="padding: 10px;">
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Farbauswahl</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent Style="padding: 0 16px 0 16px;">
+                    <MudSelect T="string" 
+                               Value=@Vm.Colors[14]
+                               HelperText="Farbe links"
+                               ValueChanged="async x => await ColorChanged(x, 0)">
+                        @foreach (var col in Vm.Colors)
+                        {
+                            <MudSelectItem Value="@col">@col</MudSelectItem>
+                        }
+                    </MudSelect>
+                    <MudSelect T="string"
+                               Value="@Vm.Colors[2]"
+                               HelperText="Farbe rechts"
+                               ValueChanged="async x => await ColorChanged(x, 1)">
+                        @foreach (var col in Vm.Colors)
+                        {
+                            <MudSelectItem Value="@col">@col</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudCardContent>
+            </MudCard>
+        </div>
+        <div style="@(_isInitDone ? "" : "display: none;")">
+            <PlotlyChart style="height: calc(100vh - 48px); width: 75vw;" Id="TestId" @ref="_plotlyChart"/>
+        </div>
+    }
+    else
+    {
+        <LoadingSpinner/>
+    }
+
+</MudContainer>
+

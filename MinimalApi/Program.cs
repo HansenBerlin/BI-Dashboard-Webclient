@@ -27,44 +27,74 @@ app.MapGet("/rentdata/{limit:int}", async (GetConnection connectionGetter, int l
     {
         using var con = await connectionGetter();
         var data = await con.QueryAsync<ImmoRentDataModelBase>(
-            $"SELECT Id, lon, lat, pricePerSqMBase, pricePerSqMService, pricePerSqMTotal, " +
+            $"SELECT id, lon, lat, pricePerSqMBase, pricePerSqMService, pricePerSqMTotal, " +
             $"'condition', interiorQual, typeOfFlat, heatingType, yearConstructed " +
             $"FROM immoscout_rent LIMIT {limit}");
         return data.ToList().Count > 0 ? Results.Ok(data.ToList()) : Results.NoContent();
     })
-    .WithOpenApi()
-    .WithDescription("description")
-    .Produces(200, responseType:typeof(List<ImmoRentDataModelBase>))
-    .Produces(204, responseType:null);
+    .WithOpenApi();
 
 
-app.MapGet("/rentdata", async (GetConnection connectionGetter) =>
+
+app.MapGet("/regions/{name}", async (GetConnection connectionGetter, string name) =>
     {
         using var con = await connectionGetter();
-        var data = await con.QueryAsync<ImmoRentDataModelBase>(
-            $"SELECT Id, lon, lat, pricePerSqMBase, pricePerSqMService, pricePerSqMTotal, " +
-            $"'condition', interiorQual, typeOfFlat, heatingType, yearConstructed " +
-            $"FROM immoscout_rent ");
+        var data = await con.QueryAsync<GenericAggregatesModel>(
+            $"SELECT agskey, {name} AS genericProperty FROM landkreise");
         return data.ToList().Count > 0 ? Results.Ok(data.ToList()) : Results.NoContent();
     })
     .WithOpenApi();
 
 
-app.MapGet("/regions", async (GetConnection connectionGetter) =>
+app.MapGet("/aggregates/buy/{columnName}", async (GetConnection connectionGetter, string columnName) =>
     {
         using var con = await connectionGetter();
-        var data = await con.QueryAsync<RegionsDataModel>(
-            "SELECT agskey, buildingPermits, landPrices, householdIncome2019, consumerInsolvencies " +
-            "FROM landkreise;");
+        var data = await con.QueryAsync<AggregateGenericModel>(
+            $"select * from (select agskey, avg({columnName}) as genericProperty " +
+            $"from immoscout_rent group by agskey) a " +
+            $"where a.agskey is not null;");
         return data.ToList().Count > 0 ? Results.Ok(data.ToList()) : Results.NoContent();
     })
     .WithOpenApi();
 
-app.MapGet("/rentdata/{name}", async (GetConnection connectionGetter, string name) =>
+
+app.MapGet("/aggregates/{dataset}/{columnName}", async (GetConnection connectionGetter, 
+        string dataset, string columnName) =>
     {
+        dataset = dataset.ToLower();
+        if (dataset != "buy" && dataset != "rent" && dataset != "economic")
+        {
+            return Results.BadRequest();
+        }
+
+        dataset = dataset switch
+        {
+            "rent" => "immoscout_rent",
+            "buy" => "immoscout_buy",
+            _ => "landkreise"
+        }; 
+        
         using var con = await connectionGetter();
-        var data = await con.QueryAsync<ImmoRentGenericDataModel>(
-            $"SELECT Id, lat, lon, {name} AS genericProperty FROM immoscout_rent");
+        var data = await con.QueryAsync<AggregateGenericModel>(
+            $"select * from (select agskey, avg({columnName}) as genericProperty " +
+            $"from {dataset} group by agskey) a " +
+            $"where a.agskey is not null;");
+        return data.ToList().Count > 0 ? Results.Ok(data.ToList()) : Results.NoContent();
+    })
+    .WithOpenApi();
+
+
+app.MapGet("/raw/{dataset}/{name}", async (GetConnection connectionGetter, string dataset, string name) =>
+    {
+        if (dataset != "buy" && dataset != "rent")
+        {
+            return Results.BadRequest();
+        }
+
+        dataset = dataset == "rent" ? "immoscout_rent" : "immoscout_buy";
+        using var con = await connectionGetter();
+        var data = await con.QueryAsync<GenericRawDataModel>(
+            $"SELECT id, lat, lon, {name} AS genericProperty FROM {dataset} WHERE {name} is not null");
         return data.ToList().Count > 0 ? Results.Ok(data.ToList()) : Results.NoContent();
     })
     .WithOpenApi();
@@ -86,16 +116,6 @@ app.MapGet("/rentdata/scores/info/{top}", async (GetConnection connectionGetter,
         string append = top ? "desc" : "asc";
         var data = await con.QueryAsync<ScoresModelInfo>(
             $"SELECT * FROM rent_aggregates_info order by score {append} limit 5");
-        return data.ToList().Count > 0 ? Results.Ok(data.ToList()) : Results.NoContent();
-    })
-    .WithOpenApi();
-
-
-app.MapGet("/regions/{name}", async (GetConnection connectionGetter, string name) =>
-    {
-        using var con = await connectionGetter();
-        var data = await con.QueryAsync<GenericRegionsModel>(
-            $"SELECT agskey, {name} AS genericProperty FROM landkreise");
         return data.ToList().Count > 0 ? Results.Ok(data.ToList()) : Results.NoContent();
     })
     .WithOpenApi();

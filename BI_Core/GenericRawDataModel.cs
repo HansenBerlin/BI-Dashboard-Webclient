@@ -1,6 +1,6 @@
 ﻿namespace BI_Core;
 
-public class ImmoRentGenericDataModel : ResponseBase
+public class GenericRawDataModel : ResponseBase
 {
     public int Id { get; set; }
     public double Lon { get; set; }
