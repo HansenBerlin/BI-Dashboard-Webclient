@@ -1,6 +1,7 @@
 using System.Data;
 using BI_Core;
 using Dapper;
+using MinimalApi;
 using MySqlConnector;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,13 +24,13 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.MapGet("/rentdata/{limit:int}", async (GetConnection connectionGetter, int limit) =>
+app.MapGet("/rentdata", async (GetConnection connectionGetter) =>
     {
         using var con = await connectionGetter();
         var data = await con.QueryAsync<ImmoRentDataModelBase>(
             $"SELECT id, lon, lat, pricePerSqMBase, pricePerSqMService, pricePerSqMTotal, " +
             $"'condition', interiorQual, typeOfFlat, heatingType, yearConstructed " +
-            $"FROM immoscout_rent LIMIT {limit}");
+            $"FROM immoscout_rent");
         return data.ToList().Count > 0 ? Results.Ok(data.ToList()) : Results.NoContent();
     })
     .WithOpenApi();
@@ -152,4 +153,7 @@ app.MapGet("/rentdata/dashboard", async (GetConnection connectionGetter) =>
 
 app.Run();
 
-public delegate Task<IDbConnection> GetConnection();
+namespace MinimalApi
+{
+    public delegate Task<IDbConnection> GetConnection();
+}

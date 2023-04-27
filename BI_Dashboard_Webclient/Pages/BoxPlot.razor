@@ -1,0 +1,80 @@
+﻿@page "/boxrent"
+@using Plotly.Blazor.LayoutLib
+@using BI_Core
+@using Infrastructure
+
+<MudContainer Class="mt-16 px-16" MaxWidth="MaxWidth.False">
+    <MudText Typo="Typo.h2">Verteilung nach Mietarten</MudText>
+    <PlotlyChart Id="BoxChart" @bind-Config="_config" @bind-Layout="_layout" @bind-Data="_data" @ref="_chart"/>
+</MudContainer>
+
+
+@code {
+    [Inject]
+    public Repository<GenericAggregatesModel> AggregatesRepository { get; set; }
+    
+    PlotlyChart _chart;
+
+    Config _config = new()
+    {
+        Responsive = true
+    };
+
+    Layout _layout = new()
+    {
+        Title = new Title
+        {
+            Text = "Box"
+        },
+        Height = 500
+    };
+
+    IList<ITrace> _data = new List<ITrace>();
+
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        string url = "https://localhost:6001/aggregates";
+        AggregatesRepository.Init(url);
+        var boxDataBaseRent = await AggregatesRepository.GetAll("rent/baseRent");
+        var boxDataServiceCost = await AggregatesRepository.GetAll("rent/serviceCharge");
+        var boxDataTotalRent = await AggregatesRepository.GetAll("rent/totalRent");
+        _data.Add(new Box
+        {
+            Y = boxDataBaseRent
+                .Select(x => (object) x.GenericProperty)
+                .ToList(),
+            Name = "Kaltmiete",
+            BoxMean = Plotly.Blazor.Traces.BoxLib.BoxMeanEnum.True,
+            BoxPoints = Plotly.Blazor.Traces.BoxLib.BoxPointsEnum.All
+        });
+        _data.Add(new Box
+        {
+            Y = boxDataServiceCost
+                .Select(x => (object) x.GenericProperty)
+                .ToList(),
+            Name = "Nebenkosten",
+            BoxMean = Plotly.Blazor.Traces.BoxLib.BoxMeanEnum.True,
+            BoxPoints = Plotly.Blazor.Traces.BoxLib.BoxPointsEnum.All
+        });
+        _data.Add(new Box
+        {
+            Y = boxDataTotalRent
+                .Select(x => (object) x.GenericProperty)
+                .ToList(),
+            Name = "Warmmiete",
+            BoxMean = Plotly.Blazor.Traces.BoxLib.BoxMeanEnum.True,
+            BoxPoints = Plotly.Blazor.Traces.BoxLib.BoxPointsEnum.All
+        });
+        await InvokeAsync(StateHasChanged);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await _chart.Update();
+            await InvokeAsync(StateHasChanged);
+            
+        }
+    }
+}

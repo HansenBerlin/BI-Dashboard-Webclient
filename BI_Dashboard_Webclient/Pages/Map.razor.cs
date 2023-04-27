@@ -4,22 +4,16 @@ using BI_Dashboard_Webclient.Models;
 using BI_Dashboard_Webclient.ViewModels;
 using Infrastructure;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using Plotly.Blazor;
 using Plotly.Blazor.ConfigLib;
 using Plotly.Blazor.LayoutLib;
 using Plotly.Blazor.LayoutLib.ColorAxisLib;
 using Plotly.Blazor.LayoutLib.ColorAxisLib.ColorBarLib;
-using Plotly.Blazor.LayoutLib.ColorAxisLib.ColorBarLib.TitleLib;
 using Plotly.Blazor.LayoutLib.MapBoxLib;
 using Plotly.Blazor.Traces;
-using Plotly.Blazor.Traces.ChoroplethMapBoxLib.MarkerLib;
 using Plotly.Blazor.Traces.ScatterMapBoxLib;
-using Title = Plotly.Blazor.LayoutLib.Title;
-using XAnchorEnum = Plotly.Blazor.LayoutLib.LegendLib.XAnchorEnum;
-using YAnchorEnum = Plotly.Blazor.LayoutLib.LegendLib.YAnchorEnum;
 
-namespace BI_Dashboard_Webclient.Components;
+namespace BI_Dashboard_Webclient.Pages;
 
 public partial class Map
 {

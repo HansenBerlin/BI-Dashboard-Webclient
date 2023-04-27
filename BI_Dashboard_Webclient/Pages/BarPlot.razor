@@ -1,13 +1,14 @@
-﻿@page "/plots"
+﻿@page "/heatingbar"
 @using Plotly.Blazor.LayoutLib
 @using Plotly.Blazor.ConfigLib
 @using BI_Core
 @using Infrastructure
 
 
-<MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False" Style="padding-top: 20px; margin-top: 20px!important;">
+<MudContainer Class="mt-16 px-16" MaxWidth="MaxWidth.False">
+    <MudText Typo="Typo.h2">Heizungtypen nach Baujahren</MudText>
     <div style="@(_isInitDone ? "" : "display: none;")">
-        <PlotlyChart style="height: 80vh; width: 80vw;" Id="TestId" @ref="_chart"/>
+        <PlotlyChart style="height: 80vh; width: 80vw;" @ref="_chart"/>
     </div>
     @if (_isInitDone == false)
     {
@@ -50,7 +51,6 @@
     {
         if (firstRender)
         {
-            
             string url = "https://localhost:6001/rentdata";
             Repository.Init(url);
             var rentData = await Repository.GetAll();

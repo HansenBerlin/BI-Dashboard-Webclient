@@ -1,32 +1,38 @@
 ﻿@inherits LayoutComponentBase
 @using BI_Dashboard_Webclient.Components
 
-<MudThemeProvider />
-<MudDialogProvider />
-<MudSnackbarProvider />
+<MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme"/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
 
 <MudLayout>
-    <MudAppBar Color="Color.Primary" Fixed="false" Dense="true">
-        <MudMenu 
-            Style="width: 200px;" 
-            FullWidth="@true" 
-            ActivationEvent="@MouseEvent.MouseOver"
-            AnchorOrigin="Origin.BottomCenter"
-            TransformOrigin="Origin.TopCenter">
-            <ActivatorContent>
-                <MudIconButton 
-                    Icon="@Icons.Material.Filled.Menu" 
-                    Color="Color.Inherit" 
-                    Size="Size.Medium" 
-                    Edge="Edge.Start"/>
-            </ActivatorContent>
-            <ChildContent>
-                <NavMenu/>
-            </ChildContent>
-        </MudMenu>
+    <MudAppBar Color="Color.Secondary" Fixed="false" Dense="true">
+        <img src="assets/logo.png" style="height: 42px; margin-right: 60px;"/>
+        <div style="display: flex; gap: 24px;">
+            <MudButton Href="/">Dashboard</MudButton>
+            <MudButton Href="/performers">Top & Flop</MudButton>
+            <MudButton Href="/maps">Karten</MudButton>
+            <MudButton Href="/prediction">ML-Amortisationsrechner</MudButton>
+            <MudMenu
+                Style="width: 200px;"
+                FullWidth="@true"
+                ActivationEvent="@MouseEvent.MouseOver"
+                AnchorOrigin="Origin.BottomCenter"
+                TransformOrigin="Origin.TopCenter">
+                <ActivatorContent>
+                    <MudButton Color="Color.Surface">Statistiken</MudButton>
+                </ActivatorContent>
+                <ChildContent>
+                    <MudNavLink Href="/heatingbar">Heizungstypen</MudNavLink>
+                    <MudNavLink Href="/boxrent">Mietverteilung</MudNavLink>
+                    <MudNavLink Href="/heatmap">Heatmap</MudNavLink>
+                </ChildContent>
+            </MudMenu>
+        </div>
         <MudSpacer/>
-        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit"/>
-        Miethai Dashboard
+        <MudSwitch
+            @bind-Checked="_isDarkMode"
+            Color="Color.Primary" T="bool"/>
     </MudAppBar>
     <MudMainContent Style="padding: 0;">
         @if (_isLoadingJson)
@@ -46,6 +52,22 @@
     public DataStatefulRepository StatefulRepository { get; set; }
 
     private bool _isLoadingJson = true;
+    
+    readonly MudTheme _theme = new()
+    {
+        Palette = new PaletteLight()
+        {
+            Primary = Colors.Blue.Darken4,
+            Secondary = Colors.BlueGrey.Lighten4,
+        },
+        PaletteDark = new PaletteDark()
+        {
+            Primary = Colors.Blue.Darken2,
+            Secondary = Colors.BlueGrey.Darken3,
+        }
+    };
+    
+    private bool _isDarkMode;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

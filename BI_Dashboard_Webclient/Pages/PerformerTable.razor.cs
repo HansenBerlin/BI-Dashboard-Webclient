@@ -3,7 +3,7 @@ using Infrastructure;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace BI_Dashboard_Webclient.Components;
+namespace BI_Dashboard_Webclient.Pages;
 
 public partial class PerformerTable
 {
