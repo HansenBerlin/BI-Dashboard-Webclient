@@ -89,7 +89,7 @@ public partial class Map
                 ColorAxis = "coloraxis2",
                 //ColorArray = new List<object>(), 
                 //Size = _selectedScatterMarkerSize,
-                Size = 20,
+                Size = 8,
                 Opacity = 0.8M
             }
         };
@@ -126,7 +126,7 @@ public partial class Map
             },
             new()
             {
-                ColorScale = "Viridis",
+                ColorScale = "Jet",
                 ShowScale = true,
                 ColorBar = new ColorBar
                 {
@@ -167,12 +167,13 @@ public partial class Map
 
     protected override async Task OnAfterRenderAsync(bool isFirstRender)
     {
+        Console.WriteLine("------------------ RENDERED ---------------------------------");
         if (isFirstRender)
         {
             try
             {
-                await _plotlyChart.AddTrace(_choromap);
-                await _plotlyChart.AddTrace(_scatterMap);
+                //await _plotlyChart.AddTrace(_choromap);
+                //await _plotlyChart.AddTrace(_scatterMap);
                 //await _plotlyChart.Relayout();
             }
             catch (Exception) { Console.WriteLine("-------");}
@@ -207,7 +208,7 @@ public partial class Map
 
     private async Task Download()
     {
-        await _plotlyChart.DownloadImage(ImageFormat.Png, 2000, 2000, "map" + Guid.NewGuid());
+        await _plotlyChart.DownloadImage(ImageFormat.Png, 1000, 1000, "map" + Guid.NewGuid());
     }
 
     private string _selectedOverlayValue = "";

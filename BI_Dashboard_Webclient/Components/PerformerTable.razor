@@ -9,7 +9,7 @@
     }
 </style>
 
-<MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
+<MudContainer Class="mt-16 px-16" MaxWidth="MaxWidth.False">
     <MudText Typo="Typo.h2">Top & Flop</MudText>
     <MudGrid Style="margin-top: 30px;">
         <MudItem xs="12" sm="6" md="6">
@@ -31,21 +31,19 @@
                     <MudTd DataLabel="Score">@context.LivingSpace.ToString()</MudTd>
                 </RowTemplate>
             </MudTable>
-            <p> @_scoresModel.Condition </p>
-            <p> @_scoresModel.HeatingType </p>
-            <p> @_scoresModel.InteriorQual </p>
         </MudItem>
         <MudItem xs="12" sm="6" md="6">
             <MudText Typo="Typo.h4">Flop 5</MudText>
-            <MudTable Items="@ElementsFlop" Hover="true"
+            <MudTable Items="@ElementsFlop"
+                      Hover="true"
                       Breakpoint="Breakpoint.Sm" @ref="mudTable"
                       RowClassFunc="@SelectedRowClassFunc"
                       OnRowClick="RowClickEvent" T="ScoresModelInfo">
                 <HeaderContent>
                     <MudTh>Id</MudTh>
-                    <MudTh>Score</MudTh>
-                    <MudTh>QM Preis kalt</MudTh>
-                    <MudTh>QM Größe</MudTh>
+                    <MudTh>Gesamtpunktzahl</MudTh>
+                    <MudTh>Kaltmiete pro QM</MudTh>
+                    <MudTh>Wohnfläche in QM</MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel="Nr">@context.Id.ToString()</MudTd>
@@ -54,67 +52,11 @@
                     <MudTd DataLabel="Score">@context.LivingSpace.ToString()</MudTd>
                 </RowTemplate>
             </MudTable>
-            <p>Zustand: @_scoresModel.Condition </p>
-            <p>Heizung @_scoresModel.HeatingType </p>
-            <p>Inneneinrichtung @_scoresModel.InteriorQual </p>
-            <p>Typ @_scoresModel.TypeOfFlat </p>
-            <p>Baujahr @_scoresModel.YearConstructed.ToString() </p>
-            <p>Nebenkostn QM @_scoresModel.PricePerSqmService.ToString(CultureInfo.InvariantCulture) </p>
-            <p>Punktwert Zustand @_scoresModel.ConditionScore.ToString(CultureInfo.InvariantCulture) </p>
-            <p>Punktwert Heizung @_scoresModel.HeatingScore.ToString(CultureInfo.InvariantCulture) </p>
-            <p>Punktwert QM Preis @_scoresModel.PriceSmScore.ToString(CultureInfo.InvariantCulture) </p>
-            <p>Punktwert Verhältnis NK zu KM @_scoresModel.RentMarginScore.ToString(CultureInfo.InvariantCulture) </p>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="12">
+            <PerformerInfo ScoresModel="_scoresModel"/>
         </MudItem>
     </MudGrid>
 </MudContainer>
 
    
-@code {
-    
-    [Inject]
-    public Repository<ScoresModelInfo> Repository { get; set; }
-
-    private int selectedRowNumber = -1;
-    private MudTable<ScoresModelInfo> mudTable;
-    private List<string> clickedEvents = new();
-    private IEnumerable<ScoresModelInfo> ElementsTop = new List<ScoresModelInfo>();
-    private IEnumerable<ScoresModelInfo> ElementsFlop = new List<ScoresModelInfo>();
-    private ScoresModelInfo _scoresModel = new();
-    
-    private void RowClickEvent(TableRowClickEventArgs<ScoresModelInfo> tableRowClickEventArgs)
-    {
-        _scoresModel = tableRowClickEventArgs.Item;
-
-    }
-
-    private string SelectedRowClassFunc(ScoresModelInfo element, int rowNumber)
-    {
-        if (selectedRowNumber == rowNumber)
-        {
-            selectedRowNumber = -1;
-            clickedEvents.Add("Selected Row: None");
-            return string.Empty;
-        }
-        if (mudTable.SelectedItem != null && mudTable.SelectedItem.Equals(element))
-        {
-            selectedRowNumber = rowNumber;
-            clickedEvents.Add($"Selected Row: {rowNumber}");
-            return "selected";
-        }
-        return string.Empty;
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            const string url = "https://localhost:6001/rentdata/scores/info";
-            Repository.Init(url);
-            ElementsTop = await Repository.GetAll("true");
-            var response = await Repository.GetAll("false");
-            ElementsFlop = response.OrderBy(x => x.Score);
-            StateHasChanged();
-        }
-    }
-
-}

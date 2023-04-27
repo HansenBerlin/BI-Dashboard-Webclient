@@ -55,11 +55,6 @@
                 </MudCardHeader>
                 <MudCardContent Style="padding: 0 16px 10px 16px;">
                     Anzeige für jeden einzelnen Datensatz (rechte Farbskala)
-                    <div style="display: flex;">
-                        <MudSlider T="int" TickMarks="true" Step="1" Min="6" Max="30" 
-                                   bind-Value="_selectedScatterMarkerSize" ValueLabel="@true"/>
-                        <MudButton OnClick="async () => await UpdateMarkerSize()">Update</MudButton>
-                    </div>
                     <DataSetRadio
                         ShowAggregateOptions="false"
                         DataSetSelectionHasChanged="async x => await DatasetSelectionChangedCallback(x, false)"/>
