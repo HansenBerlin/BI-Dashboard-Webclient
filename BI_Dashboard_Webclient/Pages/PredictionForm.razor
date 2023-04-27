@@ -1,13 +1,15 @@
 ﻿@page "/prediction"
 
 @using BI_Core
+@using BI_Dashboard_Webclient.Models
 @using Infrastructure
+@using BI_Core.Services
 
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
     <MudText Typo="Typo.h2">ML gestützte Preisvorhersage</MudText>
     <MudGrid Style="margin-top: 30px;">
-        <MudItem xs="12" sm="6" md="4">
-            <MudCard Style="width: 400px; height: 100%;">
+        <MudItem xs="12" sm="6" md="3">
+            <MudCard Style="width: 360px; height: 100%; display: flex; flex-direction: column;">
                 <MudForm Model="_address" @ref="@_addressForm">
                     <MudCardContent>
                         <MudTextField Label="Straße"
@@ -22,7 +24,7 @@
                                       @bind-Value="_address.City"/>
                     </MudCardContent>
                 </MudForm>
-                <MudCardActions Style="padding: 16px;">
+                <MudCardActions Style="width: 100%; padding: 16px; display: flex; flex-direction: column;">
                     <MudButton
                         Style="width: 100%;"
                         Variant="Variant.Filled"
@@ -31,11 +33,30 @@
                         OnClick="@(async () => await Submit())">
                         Koordinaten abrufen
                     </MudButton>
+                    <div style="width: 100%;">
+                        <MudSelect T="int" 
+                                   Style="width: 100%; margin-top: 40px; margin-bottom: 20px;"
+                                   Label="Vorgemerktes Haus auswählen" 
+                                   @bind-Value="@_houseId">
+                            @foreach (int id in _houseIds)
+                            {
+                                <MudSelectItem Style="width: 100%;" Value="id">Haus @id</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </div>
+                    <MudButton
+                        Style="width: 100%;"
+                        Variant="Variant.Filled"
+                        Color="Color.Primary"
+                        Class="ml-auto"
+                        OnClick="@AddDataFromBookmark">
+                        Daten einfügen
+                    </MudButton>
                 </MudCardActions>
             </MudCard>
         </MudItem>
-        <MudItem xs="12" sm="6" md="4">
-            <MudCard Style="width: 400px;">
+        <MudItem xs="12" sm="6" md="3">
+            <MudCard Style="width: 360px; display: flex; flex-direction: column;">
                 <MudForm Model="@_request">
                     <MudCardContent>
                         <MudNumericField Label="Anzahl Zimmer"
@@ -88,8 +109,66 @@
                 </MudCardActions>
             </MudCard>
         </MudItem>
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 100%; justify-content: center; display: grid;">
+        <MudItem xs="12" sm="6" md="3">
+            <MudCard Style="width: 360px; height: 100%; display: flex; flex-direction: column;">
+                <MudForm Model="_amortisation" @ref="@_amortisationForm">
+                    <MudCardContent>
+                        <MudNumericField T="double" 
+                                         Format="F0" 
+                                         Min="1000" 
+                                         Max="100000000" 
+                                         Label="Kaufpreis (fix)"
+                                         Step="1000"
+                                         @bind-Value="_amortisation.PurchasePrice"/>
+                        <MudNumericField T="double" 
+                                         Format="F2" 
+                                         Label="Kaufnebenkosten in %"
+                                         Min="0.01"
+                                         Step="0.01"
+                                         Max="1"
+                                         @bind-Value="_amortisation.AdditionalPurchaseCosts"/>
+                        <MudNumericField T="double" 
+                                         Format="F2" 
+                                         Label="Instandhaltungskosten/Jahr in %"
+                                         Min="0.01"
+                                         Step="0.01"
+                                         Max="1"
+                                         @bind-Value="_amortisation.MaintenanceCosts"/>
+                        <MudNumericField T="double" 
+                                         Format="F0" 
+                                         Label="Verwaltungskosten/Jahr"
+                                         Min="0"
+                                         Max="1000000"
+                                         Step="100"
+                                         @bind-Value="_amortisation.AdministrativeCosts"/>
+                        <MudNumericField T="double" 
+                                         Format="F0" 
+                                         Min="1"
+                                         Max="1000000"
+                                         Step="50"
+                                         Label="Kaltmiete/Monat"
+                                         @bind-Value="_amortisation.BaseRentMonthlyIncome"/>
+                        <MudNumericField T="double" 
+                                         Format="F2" 
+                                         Min="0.01"
+                                         Max="1"
+                                         Step="0.01"
+                                         Label="Mieterhöhung/Jahr in %"
+                                         @bind-Value="_amortisation.RentIncreasePerYear"/>
+                        <MudButton
+                            Style="width: 100%;"
+                            Variant="Variant.Filled"
+                            Color="Color.Primary"
+                            Class="ml-auto"
+                            OnClick="() => { _amortisation.CalculateAmortisation(); }">
+                            ausrechnen
+                        </MudButton>
+                    </MudCardContent>
+                </MudForm>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Elevation="2" Class="pa-4" Style="width: 360px; height: 100%; justify-content: center; display: grid;">
                 <div class="dashboard-card">
                     <MudIcon Style="font-size: 5.5rem;" 
                              Icon="@Icons.Material.Filled.Money" 
@@ -105,7 +184,24 @@
                         else
                         {
                             <h3 style="line-height: 1.1;">-</h3>
-                            
+                        }
+                    </div>
+                </div>
+                <div class="dashboard-card">
+                    <MudIcon Style="font-size: 5.5rem;" 
+                             Icon="@Icons.Material.Filled.CalendarMonth" 
+                             Color="Color.Primary"/>
+                    <div style="margin-left: 10px;">
+                        <p style="font-size: 1rem; line-height: 1;">Amortisationsdauer</p>
+                        @if (_amortisation.Years > 0)
+                        {
+                            <div class="score-value">
+                                <h3 style="line-height: 1.1;">@_amortisation.Years Jahre</h3>
+                            </div>
+                        }
+                        else
+                        {
+                            <h3 style="line-height: 1.1;">-</h3>
                         }
                     </div>
                 </div>
@@ -124,12 +220,20 @@
     
     [Inject]
     public PredictionService Repository { get; set; }
+    
+    [Inject]
+    public RealEstateBookmark RealEstateBookmark { get; set; }
+
+    private int _houseId = 0;
 
     readonly PredictionRequestModel _request = new();
     readonly AddressModel _address = new();
+    readonly AmortisationModel _amortisation = new();
     private MudForm _addressForm; 
     private MudForm _requestForm;
+    private MudForm _amortisationForm;
     private int score;
+    private List<int> _houseIds = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -137,6 +241,9 @@
         {
             string url = "http://localhost:5000/predict";
             Repository.Init(url);
+            _houseIds = RealEstateBookmark.GetallIds();
+            _houseId = _houseIds.Count > 0 ? _houseIds[0] : _houseId;
+            StateHasChanged();
         }
     }
 
@@ -145,6 +252,7 @@
         score = 0;
         var response = await Repository.Post(_request);
         score = (int)response.Score;
+        _amortisation.BaseRentMonthlyIncome = score;
     }
 
     private async Task Submit()
@@ -157,5 +265,22 @@
             _request.Lon = coordinates.Lon;
             Snackbar.Add($"Found Lat: {coordinates.Lat} and Lon: {coordinates.Lon}");
         }
+    }
+    
+    private void AddDataFromBookmark()
+    {
+        var model = RealEstateBookmark.Get(_houseId);
+        if (model.Id == 0)
+        {
+            return;
+        }
+        _amortisation.PurchasePrice = model.PurchasePrice;
+        _request.Lat = model.Lat;
+        _request.Lon = model.Lon;
+        _request.LivingSpace = model.LivingSpace;
+        _request.NoRooms = model.NoRooms;
+        _request.YearConstructed = model.YearConstructed;
+        Snackbar.Add("Daten hinzugefügt", Severity.Info);
+
     }
 }

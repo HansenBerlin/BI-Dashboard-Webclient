@@ -102,8 +102,22 @@ app.MapGet("/rentdata/scores/info/{top}", async (GetConnection connectionGetter,
     {
         using var con = await connectionGetter();
         string append = top ? "desc" : "asc";
-        var data = await con.QueryAsync<ScoresModelInfo>(
+        var data = await con.QueryAsync<RentScoresModel>(
             $"SELECT * FROM rent_aggregates_info order by score {append} limit 5");
+        return data.ToList().Count > 0 ? Results.Ok(data.ToList()) : Results.NoContent();
+    })
+    .WithOpenApi();
+
+
+app.MapGet("/buydata/scores/info/{top}", async (GetConnection connectionGetter, bool top) =>
+    {
+        using var con = await connectionGetter();
+        string append = top ? "desc" : "asc";
+        var data = await con.QueryAsync<BuyScoresModel>(
+            $"SELECT buy_aggregates_info.*, lat, lon FROM " +
+            $"buy_aggregates_info " +
+            $"join immoscout_buy ib on buy_aggregates_info.id = ib.id " +
+            $"order by score {append} limit 5");
         return data.ToList().Count > 0 ? Results.Ok(data.ToList()) : Results.NoContent();
     })
     .WithOpenApi();

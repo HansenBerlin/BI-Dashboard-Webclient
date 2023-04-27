@@ -1,7 +1,7 @@
-﻿@page "/performers"
+﻿@page "/performers-buy"
 @using BI_Core
-@using Infrastructure
 @using System.Globalization
+@using BI_Dashboard_Webclient.Components
 
 <style>
     .selected > td {
@@ -17,17 +17,17 @@
             <MudTable Items="@ElementsTop" Hover="true"
                       Breakpoint="Breakpoint.Sm" @ref="mudTable"
                       RowClassFunc="@SelectedRowClassFunc"
-                      OnRowClick="RowClickEvent" T="ScoresModelInfo">
+                      OnRowClick="RowClickEvent" T="BuyScoresModel">
                 <HeaderContent>
                     <MudTh>Id</MudTh>
                     <MudTh>Score</MudTh>
-                    <MudTh>QM Preis kalt</MudTh>
+                    <MudTh>Kaufpreis</MudTh>
                     <MudTh>QM Größe</MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel="Nr">@context.Id.ToString()</MudTd>
                     <MudTd DataLabel="Id">@context.Score.ToString()</MudTd>
-                    <MudTd DataLabel="Score">@context.PricePerSqmBase.ToString("C2")</MudTd>
+                    <MudTd DataLabel="Score">@context.PurchasePrice.ToString("C2")</MudTd>
                     <MudTd DataLabel="Score">@context.LivingSpace.ToString()</MudTd>
                 </RowTemplate>
             </MudTable>
@@ -38,23 +38,23 @@
                       Hover="true"
                       Breakpoint="Breakpoint.Sm" @ref="mudTable"
                       RowClassFunc="@SelectedRowClassFunc"
-                      OnRowClick="RowClickEvent" T="ScoresModelInfo">
+                      OnRowClick="RowClickEvent" T="BuyScoresModel">
                 <HeaderContent>
                     <MudTh>Id</MudTh>
                     <MudTh>Gesamtpunktzahl</MudTh>
-                    <MudTh>Kaltmiete pro QM</MudTh>
+                    <MudTh>Kaufpreis</MudTh>
                     <MudTh>Wohnfläche in QM</MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel="Nr">@context.Id.ToString()</MudTd>
                     <MudTd DataLabel="Id">@context.Score.ToString(CultureInfo.InvariantCulture)</MudTd>
-                    <MudTd DataLabel="Score">@context.PricePerSqmBase.ToString("C2")</MudTd>
+                    <MudTd DataLabel="Score">@context.PurchasePrice.ToString("C2")</MudTd>
                     <MudTd DataLabel="Score">@context.LivingSpace.ToString()</MudTd>
                 </RowTemplate>
             </MudTable>
         </MudItem>
         <MudItem xs="12" sm="12" md="12">
-            <PerformerInfo ScoresModel="_scoresModel"/>
+            <PerformerInfoBuy BuyScoresModel="_rentScoresModel"/>
         </MudItem>
     </MudGrid>
 </MudContainer>

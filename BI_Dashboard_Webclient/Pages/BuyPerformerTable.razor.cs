@@ -5,24 +5,24 @@ using MudBlazor;
 
 namespace BI_Dashboard_Webclient.Pages;
 
-public partial class PerformerTable
+public partial class BuyPerformerTable
 {
     [Inject]
-    public Repository<ScoresModelInfo> Repository { get; set; }
+    public Repository<BuyScoresModel> Repository { get; set; }
 
     private int selectedRowNumber = -1;
-    private MudTable<ScoresModelInfo> mudTable;
+    private MudTable<BuyScoresModel> mudTable;
     private List<string> clickedEvents = new();
-    private IEnumerable<ScoresModelInfo> ElementsTop = new List<ScoresModelInfo>();
-    private IEnumerable<ScoresModelInfo> ElementsFlop = new List<ScoresModelInfo>();
-    private ScoresModelInfo _scoresModel = new();
+    private IEnumerable<BuyScoresModel> ElementsTop = new List<BuyScoresModel>();
+    private IEnumerable<BuyScoresModel> ElementsFlop = new List<BuyScoresModel>();
+    private BuyScoresModel _rentScoresModel = new();
     
-    private void RowClickEvent(TableRowClickEventArgs<ScoresModelInfo> tableRowClickEventArgs)
+    private void RowClickEvent(TableRowClickEventArgs<BuyScoresModel> tableRowClickEventArgs)
     {
-        _scoresModel = tableRowClickEventArgs.Item;
+        _rentScoresModel = tableRowClickEventArgs.Item;
     }
 
-    private string SelectedRowClassFunc(ScoresModelInfo element, int rowNumber)
+    private string SelectedRowClassFunc(BuyScoresModel element, int rowNumber)
     {
         if (selectedRowNumber == rowNumber)
         {
@@ -43,12 +43,12 @@ public partial class PerformerTable
     {
         if (firstRender)
         {
-            const string url = "https://localhost:6001/rentdata/scores/info";
+            const string url = "https://localhost:6001/buydata/scores/info";
             Repository.Init(url);
             ElementsTop = await Repository.GetAll("true");
             var response = await Repository.GetAll("false");
             ElementsFlop = response.OrderBy(x => x.Score);
-            _scoresModel = ElementsTop.FirstOrDefault() ?? new ScoresModelInfo();
+            _rentScoresModel = ElementsTop.FirstOrDefault() ?? new BuyScoresModel();
             StateHasChanged();
         }
     }

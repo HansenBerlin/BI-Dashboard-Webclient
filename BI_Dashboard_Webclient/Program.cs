@@ -1,4 +1,5 @@
 using BI_Core;
+using BI_Core.Services;
 using BI_Dashboard_Webclient;
 using BI_Dashboard_Webclient.Models;
 using BI_Dashboard_Webclient.ViewModels;
@@ -18,8 +19,10 @@ builder.Services.AddSingleton<Repository<RentDashboardModel>>();
 builder.Services.AddSingleton<Repository<RegionsDataModel>>();
 builder.Services.AddSingleton<Repository<GenericAggregatesModel>>();
 builder.Services.AddSingleton<Repository<Location>>();
-builder.Services.AddSingleton<Repository<ScoresModelInfo>>();
+builder.Services.AddSingleton<Repository<RentScoresModel>>();
+builder.Services.AddSingleton<Repository<BuyScoresModel>>();
 builder.Services.AddSingleton<PredictionService>();
+builder.Services.AddSingleton<RealEstateBookmark>();
 builder.Services.AddSingleton<OSMRequestService>();
 builder.Services.AddScoped<DropdownModel>();
 builder.Services.AddTransient<DropdownViewModel>();

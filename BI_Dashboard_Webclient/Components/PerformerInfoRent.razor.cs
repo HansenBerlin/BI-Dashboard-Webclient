@@ -1,13 +1,14 @@
 ﻿using BI_Core;
+using BI_Core.Services;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
 namespace BI_Dashboard_Webclient.Components;
 
-public partial class PerformerInfo
+public partial class PerformerInfoRent
 {
     [Parameter]
-    public ScoresModelInfo ScoresModel { get; set; }
+    public RentScoresModel RentScoresModel { get; set; }
 
     private Color MapColorFromScore(double score)
     {

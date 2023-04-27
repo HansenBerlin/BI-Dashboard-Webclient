@@ -2,17 +2,18 @@
     <MudCardHeader Style="padding: 0;">
         <CardHeaderContent>
             <MudText Typo="Typo.h6">
-                ID: @ScoresModel.Id
+                ID: @RentScoresModel.Id
             </MudText>
         </CardHeaderContent>
     </MudCardHeader>
     <MudCardContent Style="display: flex; flex-direction: column; align-items: center;">
-        <MudChipSet>
-            <MudChip Color="@MapColorFromScore(ScoresModel.ConditionScore)">Zustand: @ScoresModel.ConditionScore.ToString()</MudChip>
-            <MudChip Color="@MapColorFromScore(ScoresModel.HeatingScore)">Heizung: @ScoresModel.HeatingScore.ToString()</MudChip>
-            <MudChip Color="@MapColorFromScore(ScoresModel.PriceSmScore)">€ QM kalt : @ScoresModel.PriceSmScore.ToString()</MudChip>
-            <MudChip Color="@MapColorFromScore(ScoresModel.RentMarginScore)">KM zu NK: @ScoresModel.RentMarginScore.ToString()</MudChip>
-            <MudChip Color="@MapColorFromScore(ScoresModel.Score)">Gesamtbewertung: @ScoresModel.Score.ToString()</MudChip>
+        <MudChipSet Style="display: flex;">
+            <MudText Style="padding-right: 12px;" Typo="Typo.h5">Punkte</MudText>
+            <MudChip Color="@MapColorFromScore(RentScoresModel.ConditionScore)">Zustand: @RentScoresModel.ConditionScore.ToString()</MudChip>
+            <MudChip Color="@MapColorFromScore(RentScoresModel.HeatingScore)">Heizung: @RentScoresModel.HeatingScore.ToString()</MudChip>
+            <MudChip Color="@MapColorFromScore(RentScoresModel.PriceSmScore)">QM kalt : @RentScoresModel.PriceSmScore.ToString()</MudChip>
+            <MudChip Color="@MapColorFromScore(RentScoresModel.RentMarginScore)">KM zu NK: @RentScoresModel.RentMarginScore.ToString()</MudChip>
+            <MudChip Color="@MapColorFromScore(RentScoresModel.Score)">Gesamtbewertung: @RentScoresModel.Score.ToString()</MudChip>
         </MudChipSet>
         <div style="display: flex; gap: 80px; padding-top: 32px;">
             <MudCard Style="display: flex; gap: 32px; padding: 16px;">
@@ -22,9 +23,9 @@
                     <MudText Style="font-weight: bold;">Inneneinrichtung</MudText>
                 </div>
                 <div style="display: flex; flex-direction: column;">
-                    <MudText>@ScoresModel.Condition</MudText>
-                    <MudText>@ScoresModel.HeatingType</MudText>
-                    <MudText>@ScoresModel.InteriorQual</MudText>
+                    <MudText>@RentScoresModel.Condition</MudText>
+                    <MudText>@RentScoresModel.HeatingType</MudText>
+                    <MudText>@RentScoresModel.InteriorQual</MudText>
                 </div>
             </MudCard>
             <MudCard Style="padding: 16px; display: flex; gap: 32px;">
@@ -34,9 +35,9 @@
                     <MudText Style="font-weight: bold;">Wohnfläche</MudText>
                 </div>
                 <div style="display: flex; flex-direction: column;">
-                    <MudText>@ScoresModel.TypeOfFlat</MudText>
-                    <MudText>@ScoresModel.YearConstructed</MudText>
-                    <MudText>@ScoresModel.LivingSpace QM</MudText>
+                    <MudText>@RentScoresModel.TypeOfFlat</MudText>
+                    <MudText>@RentScoresModel.YearConstructed</MudText>
+                    <MudText>@RentScoresModel.LivingSpace QM</MudText>
                 </div>
             </MudCard>
             <MudCard Style="padding: 16px; display: flex; gap: 32px;">
@@ -46,17 +47,14 @@
                     <MudText Style="font-weight: bold;">Gesamtmiete pro QM /gesamt</MudText>
                 </div>
                 <div style="display: flex; flex-direction: column;">
-                    <MudText>@ScoresModel.PricePerSqmBase.ToString("N2")€ (@((ScoresModel.PricePerSqmBase * ScoresModel.LivingSpace).ToString("N0"))€)</MudText>
-                    <MudText>@ScoresModel.PricePerSqmService.ToString("N2")€ (@((ScoresModel.PricePerSqmService * ScoresModel.LivingSpace).ToString("N0"))€)</MudText>
-                    <MudText>@((ScoresModel.PricePerSqmService + ScoresModel.PricePerSqmBase).ToString("N2"))€ 
-                        (@((ScoresModel.PricePerSqmBase 
-                            * ScoresModel.LivingSpace + ScoresModel.PricePerSqmService 
-                            * ScoresModel.PricePerSqmService).ToString("N0"))€)</MudText>
+                    <MudText>@RentScoresModel.PricePerSqmBase.ToString("N2")€ (@((RentScoresModel.PricePerSqmBase * RentScoresModel.LivingSpace).ToString("N0"))€)</MudText>
+                    <MudText>@RentScoresModel.PricePerSqmService.ToString("N2")€ (@((RentScoresModel.PricePerSqmService * RentScoresModel.LivingSpace).ToString("N0"))€)</MudText>
+                    <MudText>@((RentScoresModel.PricePerSqmService + RentScoresModel.PricePerSqmBase).ToString("N2"))€ 
+                        (@((RentScoresModel.PricePerSqmBase 
+                            * RentScoresModel.LivingSpace + RentScoresModel.PricePerSqmService 
+                            * RentScoresModel.PricePerSqmService).ToString("N0"))€)</MudText>
                 </div>
             </MudCard>
         </div>
     </MudCardContent>
-    <MudCardActions>
-        <MudButton Variant="Variant.Text" Color="Color.Primary">Auf Karte anzeigen</MudButton>
-    </MudCardActions>
 </MudCard>

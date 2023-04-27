@@ -7,10 +7,18 @@
 
 <MudLayout>
     <MudAppBar Color="Color.Secondary" Fixed="false" Dense="true">
-        <img src="assets/logo.png" style="height: 42px; margin-right: 60px;"/>
+        @if (_isDarkMode)
+        {
+            <img src="assets/logohell.png" style="height: 42px; margin-right: 60px;"/>
+        }
+        else
+        {
+            <img src="assets/logo.png" style="height: 42px; margin-right: 60px;"/>
+        }
         <div style="display: flex; gap: 24px;">
             <MudButton Href="/">Dashboard</MudButton>
-            <MudButton Href="/performers">Top & Flop</MudButton>
+            <MudButton Href="/performers-buy">Top & Flop 1</MudButton>
+            <MudButton Href="/performers-rent">Top & Flop 2</MudButton>
             <MudButton Href="/maps">Karten</MudButton>
             <MudButton Href="/prediction">ML-Amortisationsrechner</MudButton>
             <MudMenu

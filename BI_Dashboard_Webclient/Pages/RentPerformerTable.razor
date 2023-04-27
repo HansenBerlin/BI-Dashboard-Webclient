@@ -1,0 +1,62 @@
+﻿@page "/performers-rent"
+@using BI_Core
+@using System.Globalization
+@using BI_Dashboard_Webclient.Components
+
+<style>
+    .selected > td {
+        background: #d7d7d7;
+    }
+</style>
+
+<MudContainer Class="mt-16 px-16" MaxWidth="MaxWidth.False">
+    <MudText Typo="Typo.h2">Top & Flop</MudText>
+    <MudGrid Style="margin-top: 30px;">
+        <MudItem xs="12" sm="6" md="6">
+            <MudText Typo="Typo.h4">Top 5</MudText>
+            <MudTable Items="@ElementsTop" Hover="true"
+                      Breakpoint="Breakpoint.Sm" @ref="mudTable"
+                      RowClassFunc="@SelectedRowClassFunc"
+                      OnRowClick="RowClickEvent" T="RentScoresModel">
+                <HeaderContent>
+                    <MudTh>Id</MudTh>
+                    <MudTh>Score</MudTh>
+                    <MudTh>QM Preis kalt</MudTh>
+                    <MudTh>QM Größe</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Nr">@context.Id.ToString()</MudTd>
+                    <MudTd DataLabel="Id">@context.Score.ToString()</MudTd>
+                    <MudTd DataLabel="Score">@context.PricePerSqmBase.ToString("C2")</MudTd>
+                    <MudTd DataLabel="Score">@context.LivingSpace.ToString()</MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="6">
+            <MudText Typo="Typo.h4">Flop 5</MudText>
+            <MudTable Items="@ElementsFlop"
+                      Hover="true"
+                      Breakpoint="Breakpoint.Sm" @ref="mudTable"
+                      RowClassFunc="@SelectedRowClassFunc"
+                      OnRowClick="RowClickEvent" T="RentScoresModel">
+                <HeaderContent>
+                    <MudTh>Id</MudTh>
+                    <MudTh>Gesamtpunktzahl</MudTh>
+                    <MudTh>Kaltmiete pro QM</MudTh>
+                    <MudTh>Wohnfläche in QM</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Nr">@context.Id.ToString()</MudTd>
+                    <MudTd DataLabel="Id">@context.Score.ToString(CultureInfo.InvariantCulture)</MudTd>
+                    <MudTd DataLabel="Score">@context.PricePerSqmBase.ToString("C2")</MudTd>
+                    <MudTd DataLabel="Score">@context.LivingSpace.ToString()</MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="12">
+            <PerformerInfoRent RentScoresModel="_rentScoresModel"/>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+   
