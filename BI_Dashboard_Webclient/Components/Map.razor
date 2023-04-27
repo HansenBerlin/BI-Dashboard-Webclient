@@ -6,9 +6,9 @@
 
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" 
               Style="display: flex; margin: 0!important; padding: 0!important;">
-    @if (false)
-    {
-        <div style="width: 25vw; padding: 20px; min-width: 340px; display: flex; flex-direction: column; gap: 20px;">
+    <div style="width: 25vw; padding: 20px; min-width: 340px; display: flex; flex-direction: column; gap: 20px;">
+        @if (_isInitDone)
+        {
             <MudCard Style="padding: 20px;" Outlined="@true">
                 <MudCardHeader Style="padding: 10px;">
                     <CardHeaderContent>
@@ -50,11 +50,11 @@
                     {
                         case DataSet.Rent:
                             <Dropdown DataType="@DataType.RentNumerical" 
-                                      SelectedValueHasChanged="@OverlayColorValueChanged"/>
+                                      SelectedValueHasChanged="async x => await OverlayColorValueChanged(x)"/>
                             break;
                         case DataSet.Buy:
                             <Dropdown DataType="@DataType.BuyNumerical" 
-                                      SelectedValueHasChanged="@OverlayColorValueChanged"/>
+                                      SelectedValueHasChanged="async x => await OverlayColorValueChanged(x)"/>
                             break;
                     }
                 </MudCardContent>
@@ -86,15 +86,18 @@
                     </MudSelect>
                 </MudCardContent>
             </MudCard>
-        </div>
-        <div style="@(_isInitDone ? "" : "display: none;")">
-            <PlotlyChart style="height: calc(100vh - 48px); width: 75vw;" Id="TestId" @ref="_plotlyChart"/>
-        </div>
-    }
-    else
-    {
-        <LoadingSpinner/>
-    }
+        }
+        else
+        {
+            <LoadingSpinner/>
+        }
+    </div>
+    
+    <PlotlyChart style="height: calc(100vh - 48px); width: 75vw;" 
+                 @bind-Config="_config" 
+                 @bind-Layout="_layout" 
+                 @bind-Data="_data" 
+                 @ref="_plotlyChart"/>
 
 </MudContainer>
 

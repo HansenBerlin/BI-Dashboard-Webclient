@@ -46,22 +46,9 @@ app.MapGet("/regions/{name}", async (GetConnection connectionGetter, string name
     .WithOpenApi();
 
 
-app.MapGet("/aggregates/buy/{columnName}", async (GetConnection connectionGetter, string columnName) =>
-    {
-        using var con = await connectionGetter();
-        var data = await con.QueryAsync<AggregateGenericModel>(
-            $"select * from (select agskey, avg({columnName}) as genericProperty " +
-            $"from immoscout_rent group by agskey) a " +
-            $"where a.agskey is not null;");
-        return data.ToList().Count > 0 ? Results.Ok(data.ToList()) : Results.NoContent();
-    })
-    .WithOpenApi();
-
-
 app.MapGet("/aggregates/{dataset}/{columnName}", async (GetConnection connectionGetter, 
         string dataset, string columnName) =>
     {
-        dataset = dataset.ToLower();
         if (dataset != "buy" && dataset != "rent" && dataset != "economic")
         {
             return Results.BadRequest();
