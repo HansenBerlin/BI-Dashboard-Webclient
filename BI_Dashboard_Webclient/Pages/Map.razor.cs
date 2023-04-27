@@ -65,7 +65,7 @@ public partial class Map
             Name = "base", 
             Marker = new Plotly.Blazor.Traces.ChoroplethMapBoxLib.Marker
             {
-                Opacity = 0.4M
+                Opacity = 0.6M
             }
         };
 
@@ -83,8 +83,8 @@ public partial class Map
                 ColorAxis = "coloraxis2",
                 //ColorArray = new List<object>(), 
                 //Size = _selectedScatterMarkerSize,
-                Size = 8,
-                Opacity = 0.8M
+                Size = 6,
+                Opacity = 0.9M
             }
         };
 
@@ -212,8 +212,8 @@ public partial class Map
 
     private async Task OverlaySizeValueChanged(SelectionDataSetOptions selected)
     {
-        _selectedOverlayValue = selected.Column;
         _isInitDone = false;
+        _selectedOverlayValue = selected.Column;
         string appendToUrl = $"{selected.DataSet.ToString()}/{selected.Column}";
         var scatterOverlayDataSize = await ImmoDataRepository.GetAll(appendToUrl);
         
@@ -231,6 +231,8 @@ public partial class Map
     private async Task OverlayColorValueChanged(SelectionDataSetOptions selected)
     {
         _isInitDone = false;
+        _selectedOverlayValue = selected.Column;
+
         string appendToUrl = $"{selected.DataSet.ToString().ToLower()}/{selected.Column}";
         var scatterOverlayDataColor = await ImmoDataRepository.GetAll(appendToUrl);
         

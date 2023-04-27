@@ -17,8 +17,19 @@
         }
         <div style="display: flex; gap: 24px;">
             <MudButton Href="/">Dashboard</MudButton>
-            <MudButton Href="/performers-buy">Top & Flop 1</MudButton>
-            <MudButton Href="/performers-rent">Top & Flop 2</MudButton>
+            <MudMenu
+                FullWidth="@true"
+                ActivationEvent="@MouseEvent.MouseOver"
+                AnchorOrigin="Origin.BottomCenter"
+                TransformOrigin="Origin.TopCenter">
+                <ActivatorContent>
+                    <MudButton Color="Color.Surface">Performance</MudButton>
+                </ActivatorContent>
+                <ChildContent>
+                    <MudNavLink Href="/performers-buy">Angebot</MudNavLink>
+                    <MudNavLink Href="/performers-rent">Bestand</MudNavLink>
+                </ChildContent>
+            </MudMenu>
             <MudButton Href="/maps">Karten</MudButton>
             <MudButton Href="/prediction">ML-Amortisationsrechner</MudButton>
             <MudMenu

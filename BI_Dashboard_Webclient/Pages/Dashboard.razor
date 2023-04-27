@@ -18,16 +18,25 @@
         <MudItem xs="12" sm="12" md="3">
             <DashboardSmall Icon="@Icons.Material.Filled.Payments" Name="Kaltmiete Ø in €" Value="@(_data.AverageBaseRent.ToString())"/>
         </MudItem>
-        <MudItem xs="12" sm="8">
+        <MudItem xs="12" sm="3">
+            <MudPaper Elevation="2" Class="pa-8" Style="height: 400px; display: flex; flex-direction: column;">
+                <div style="display: flex; margin-bottom: 32px;" x>
+                    <MudImage Height="150" Src="assets/hai.png" Elevation="0"/>
+                    <MudText Style="font-size: 2rem; padding-left: 32px;" 
+                             Typo="Typo.h2" >Miethai-Motto <br/>der Woche</MudText>
+                </div>
+                <MudText Typo="Typo.h5">@_mottos[new Random().Next(0, _mottos.Count - 1)]</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="5">
             <MudPaper Elevation="2" Class="pa-4" Style="height: 400px;">
-                <MudChart 
-                     LegendPosition="Position.Left"
-                    ChartType="ChartType.Bar" 
-                    ChartSeries="@_series" 
-                    XAxisLabels="@_xAxisLabels" 
-                    Width="100%" 
-                    Height="400px">
-                </MudChart>
+                <h2 style="padding: 10px; text-align: right;">High- und Low-Performer</h2>
+                <MudChart LegendPosition="Position.Right"
+                          ChartType="ChartType.Pie"
+                          InputData="@_plotData"
+                          InputLabels="@_labels"
+                          Width="300px" Height="300px"
+                          ChartOptions="_chartOptions"/>
             </MudPaper>
         </MudItem>
         <MudItem xs="12" sm="6" md="4">
@@ -69,11 +78,6 @@
                         <h4 style="line-height: 1.1;">@_data.MostCommonInteriorQual</h4>
                     </div>
                 </div>
-                
-
-
-
-
             </MudPaper>
         </MudItem>
     </MudGrid>
@@ -84,9 +88,37 @@
     [Inject]
     public Repository<RentDashboardModel> Repository { get; set; }
 
-    
     private RentDashboardModel _data = new();
 
+    private readonly List<string> _mottos = new()
+    {
+        "We don't just rent apartments, we take a bite out of the competition.",
+        "Our rentals are like a shark attack: sudden, vicious, and impossible to forget.",
+        "We're not just a real estate company, we're the apex predators of the rental market.",
+        "When you rent with us, the only thing you have to fear is your bank account balance.",
+        "We're not for the faint of heart, but we're definitely for the deep of wallet.",
+        "Our company motto: 'squeeze them until they're dry, then squeeze some more.",
+        "With our rentals, you'll be living the dream of paying for someone else's yacht.",
+        "If we can't squeeze blood from a stone, we'll just find a bigger stone.",
+        "Renting just got more ruthless with us.",
+        "Renting with us is like winning the lottery, except the prize is a lifetime of debt.",
+        "Our rentals are like a toxic relationship, but with more paperwork and less love."
+    };
+    //3486, 37850, 23500, 52
+    private readonly double[] _plotData = { 3486, 20784, 39586, 1032 };
+    private readonly string[] _labels = { "High Peformer", "unbedenklich", "Teilrisiken", "hochkritisch" };
+
+    private readonly ChartOptions _chartOptions = new()
+    {
+        ChartPalette = new []
+        {
+            Colors.BlueGrey.Lighten4, 
+            Colors.BlueGrey.Lighten2, 
+            Colors.BlueGrey.Darken1, 
+            Colors.BlueGrey.Darken3
+        }
+    };
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -99,25 +131,4 @@
         }
     }
 
-    private readonly List<ChartSeries> _series = new()
-    {
-        new ChartSeries { Name = "Anteil NK an Gesamtmiete", Data = new[] { 0.15 * 100, 0.16 * 100, 0.17 * 100, 0.17 * 100, 0.17 * 100, 
-            0.17 * 100, 0.18 * 100, 0.19 * 100, 0.2 * 100, 0.21 * 100, 0.21 * 100, 0.21 * 100, 0.22 * 100}}
-    };
-
-    private readonly string[] _xAxisLabels = {
-        "Solarheizung",
-        "Wärmepumpe",
-        "Holzpellet-Heizung",
-        "Fußbodenheizung",
-        "Autarke Zentralheizung",
-        "Ofenheizung",
-        "Elektroheizung",
-        "Kraft-Wärme-Kopplungsanlage",
-        "Nachtspeicherheizung",
-        "Zentralheizung",
-        "Gasheizung",
-        "Ölheizung",
-        "Fernwärme"
-    };
 }
