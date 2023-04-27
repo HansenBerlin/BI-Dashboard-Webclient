@@ -4,11 +4,13 @@ using BI_Dashboard_Webclient.Models;
 using BI_Dashboard_Webclient.ViewModels;
 using Infrastructure;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Plotly.Blazor;
 using Plotly.Blazor.ConfigLib;
 using Plotly.Blazor.LayoutLib;
 using Plotly.Blazor.LayoutLib.ColorAxisLib;
 using Plotly.Blazor.LayoutLib.ColorAxisLib.ColorBarLib;
+using Plotly.Blazor.LayoutLib.ColorAxisLib.ColorBarLib.TitleLib;
 using Plotly.Blazor.LayoutLib.MapBoxLib;
 using Plotly.Blazor.Traces;
 using Plotly.Blazor.Traces.ChoroplethMapBoxLib.MarkerLib;
@@ -47,130 +49,120 @@ public partial class Map
     private Config _config = new();
     private Layout _layout = new();
     private IList<ITrace> _data = new List<ITrace>();
-    
 
 
     public override async Task SetParametersAsync(ParameterView parameters)
     {
         string url = "https://localhost:6001/aggregates";
         AggregatesRepository.Init(url);
-            url = "https://localhost:6001/raw";
-            ImmoDataRepository.Init(url);
-            
-            var geoJsonData = await StatefulRepository.Get();
+        url = "https://localhost:6001/raw";
+        ImmoDataRepository.Init(url);
 
-            _config.MapboxAccessToken = Token;
-            _choromap =  new ChoroplethMapBox
-            {
-                GeoJson = geoJsonData,
-                FeatureIdKey = "properties.AGS",
-                ColorAxis = "coloraxis", 
-                Below = "state-label-sm"
-            };
+        var geoJsonData = await StatefulRepository.Get();
 
-            _scatterMap = new ScatterMapBox
+        _config.MapboxAccessToken = Token;
+        _choromap = new ChoroplethMapBox
+        {
+            GeoJson = geoJsonData,
+            FeatureIdKey = "properties.AGS",
+            ColorAxis = "coloraxis",
+            Below = "scatter", 
+            UId = "base", 
+            Name = "base", 
+            Marker = new Plotly.Blazor.Traces.ChoroplethMapBoxLib.Marker
             {
-                Mode = ModeFlag.Markers, 
-                Below = "''",
-                //Fill = FillEnum.ToSelf,
-                //Lat = new List<object>(), 
-                //Lon = new List<object>(), 
-                Visible = VisibleEnum.True,
-                Marker = new Marker
+                Opacity = 0.4M
+            }
+        };
+
+        _scatterMap = new ScatterMapBox
+        {
+            Mode = ModeFlag.Markers, 
+            //Opacity = 0.7M, 
+            Name = "scatterdata", 
+            Text = "hello",
+            HoverText = "test", 
+            UId = "scatter",
+            Visible = VisibleEnum.True,
+            Marker = new Marker
+            {
+                ColorAxis = "coloraxis2",
+                //ColorArray = new List<object>(), 
+                //Size = _selectedScatterMarkerSize,
+                Size = 20,
+                Opacity = 0.8M
+            }
+        };
+
+        _layout.MapBox = new List<MapBox>
+        {
+            new()
+            {
+                Style = "carto-positron",
+                Center = new Center
                 {
-                    ColorAxis = "coloraxis2",
-                    //ColorArray = new List<object>(), 
-                    Size = 4, 
-                    Opacity = 0.8M
-                }
-            };
-
-            _layout.Legend = new Legend
-            {
-                YAnchor = YAnchorEnum.Top,
-                XAnchor = XAnchorEnum.Left,
-                Y = 0.99m,
-                X = 0.99m
-            };
-            
-            _layout.MapBox = new List<MapBox>
-            {
-                new()
-                {
-                    Style = "carto-positron",
-                    Center = new Center
-                    {
-                        Lon = 10.4515m,
-                        Lat = 51.1657m
-                    },
-                    Zoom = 5.5m
-                }
-            };
-            _layout.ColorAxis = new List<ColorAxis>
-            {
-                new()
-                {
-                    ColorScale = "Viridis",
-                    ShowScale = true,
-                    ColorBar = new ColorBar
-                    {
-                        YAnchor = 0,
-                        Y = 1,
-                        X = 0.05m,
-                        Title = new Plotly.Blazor.LayoutLib.ColorAxisLib.ColorBarLib.Title
-                        {
-                            Text = _selectedBaseValue
-                        },
-                        TickLabelPosition = TickLabelPositionEnum.OutsideLeft,
-                        BgColor = "#ffffff88",
-                        BorderColor = "#99999999"
-
-                    }
+                    Lon = 10.4515m,
+                    Lat = 51.1657m
                 },
-                new()
-                {
-                    ColorScale = "Cividis",
-                    ShowScale = true,
-                    ColorBar = new ColorBar
-                    {
-                        YAnchor = 0,
-                        Y = 1,
-                        X = 0.9m,
-                        Title = new Plotly.Blazor.LayoutLib.ColorAxisLib.ColorBarLib.Title
-                        {
-                            Text = _selectedOverlayValue
-                        },
-                        TickLabelPosition = TickLabelPositionEnum.OutsideRight,
-                        BgColor = "#ffffff88",
-                        BorderColor = "#99999999"
-                    }
-                }
-            };
-            _layout.Margin = new Margin()
+                Zoom = 5.7m
+            }
+        };
+        _layout.ColorAxis = new List<ColorAxis>
+        {
+            new()
             {
-                B = 0,
-                L = 0,
-                R = 0,
-                T = 0,
-                Pad = 0,
-                AutoExpand = true
-            };
+                ColorScale = "Cividis",
+                ShowScale = true,
+                ColorBar = new ColorBar
+                {
+                    YAnchor = 0, 
+                    Len = 0.8m,
+                    Y = 0.9m,
+                    X = 0.05m,
+                    TickLabelPosition = TickLabelPositionEnum.OutsideLeft,
+                    BgColor = "#ffffff88",
+                    BorderColor = "#99999999"
+                }
+            },
+            new()
+            {
+                ColorScale = "Viridis",
+                ShowScale = true,
+                ColorBar = new ColorBar
+                {
+                    YAnchor = 0,
+                    Y = 0.9m, 
+                    Len = 0.8m,
+                    X = 0.9m,
+                    //TickLabelPosition = TickLabelPositionEnum.OutsideRight,
+                    BgColor = "#ffffff88",
+                    BorderColor = "#99999999"
+                }
+            }
+        };
         
-            
+        _layout.Margin = new Margin
+        {
+            B = 0,
+            L = 0,
+            R = 0,
+            T = 0,
+            Pad = 0,
+            AutoExpand = true
+        };
 
-            _config.MapboxAccessToken = Token;
-            _config.Responsive = true;
-            _config.DisplayLogo = false;
-            _config.DisplayModeBar = DisplayModeBarEnum.False;
-            _config.Editable = false;
-        
-            _data.Add(_scatterMap);
-            _data.Add(_choromap);
-            
-            StateHasChanged();
-            
-            await base.SetParametersAsync(ParameterView.Empty);
+        _config.MapboxAccessToken = Token;
+        _config.Responsive = true;
+        _config.DisplayLogo = false;
+        _config.DisplayModeBar = DisplayModeBarEnum.False;
+        _config.Editable = false;
 
+        _data.Add(_choromap);
+        _data.Add(_scatterMap);
+
+        //StateHasChanged();
+
+        await base.SetParametersAsync(ParameterView.Empty);
     }
 
     protected override async Task OnAfterRenderAsync(bool isFirstRender)
@@ -188,12 +180,7 @@ public partial class Map
             await InvokeAsync(StateHasChanged);
         }
     }
-
-    private async Task Test(IList<ITrace> dataChanged)
-    {
-        Console.WriteLine("Test " + dataChanged.Count);
-    }
-
+    
     private async Task DatasetSelectionChangedCallback(DataSet dataset, bool isAggregate)
     {
         if (isAggregate)
@@ -205,14 +192,28 @@ public partial class Map
             _selectedOverlayDataset = dataset;
         }
 
+        //await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task UpdateMarkerSize()
+    {
+        _scatterMap.Marker.Size = _selectedScatterMarkerSize;
+        Console.WriteLine(_selectedScatterMarkerSize);
+        //await _plotlyChart.NewPlot();
+        await _plotlyChart.Update();
+        
         await InvokeAsync(StateHasChanged);
     }
 
-    
+    private async Task Download()
+    {
+        await _plotlyChart.DownloadImage(ImageFormat.Png, 2000, 2000, "map" + Guid.NewGuid());
+    }
 
     private string _selectedOverlayValue = "";
     //private string _selectedOverlaySize = "";
     private string _selectedBaseValue = "";
+    private int _selectedScatterMarkerSize = 6;
 
     private async Task OverlaySizeValueChanged(SelectionDataSetOptions selected)
     {
@@ -244,7 +245,7 @@ public partial class Map
             StateHasChanged();
             return;
         }
-
+        
         _scatterMap.Marker.ColorArray = scatterOverlayDataColor
             .Select(x => (object) x.GenericProperty)
             .ToList();
@@ -255,36 +256,20 @@ public partial class Map
         _scatterMap.Lon = scatterOverlayDataColor
             .Select(x => (object) x.Lon)
             .ToList();
-
-        /*_scatterMap.Lon.Clear();
-        _scatterMap.Lat.Clear();
-        _scatterMap.Marker.ColorArray.Clear();
-
-        foreach (var point in scatterOverlayDataColor)
-        {
-            if (point.GenericProperty != null)
-            {
-                _scatterMap.Lat.Add(point.Lat);
-                _scatterMap.Lon.Add(point.Lon);
-                _scatterMap.Marker.ColorArray.Add(point.GenericProperty);
-            }
-        }*/
         
-
         (decimal min, decimal max) = CalculateMinMax(scatterOverlayDataColor
             .Select(x => double.Parse(x.GenericProperty))
             .ToList());
         
         _layout.ColorAxis[1].CMax = max;
         _layout.ColorAxis[1].CMin = min;
-        
-        _plotlyChart.Layout.ColorAxis[1].ColorBar.Title.Text = _selectedOverlayValue;
+        //_plotlyChart.Layout.ColorAxis[1].ColorBar.Title.Text = _selectedOverlayValue;
 
         //await _plotlyChart.React();
         await _plotlyChart.NewPlot();
         //await _plotlyChart.Update();
         _isInitDone = true;
-        await InvokeAsync(StateHasChanged);
+        //await InvokeAsync(StateHasChanged);
 
     }
 
@@ -313,14 +298,14 @@ public partial class Map
             .Select(x => (object)x.AgsKey)
             .ToList();
         
-        _layout.ColorAxis[1].CMax = max;
-        _layout.ColorAxis[1].CMin = min;
-        _plotlyChart.Layout.ColorAxis[0].ColorBar.Title.Text = _selectedBaseValue;
+        _layout.ColorAxis[0].CMax = max;
+        _layout.ColorAxis[0].CMin = min;
+        //_plotlyChart.Layout.ColorAxis[0].ColorBar.Title.Text = _selectedBaseValue;
 
-        //await _plotlyChart.Update();
-        await _plotlyChart.NewPlot();
+        await _plotlyChart.Update();
+        //await _plotlyChart.NewPlot();
         _isInitDone = true;
-        await InvokeAsync(StateHasChanged);
+        //await InvokeAsync(StateHasChanged);
 
     }
 

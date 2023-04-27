@@ -4,71 +4,90 @@
 @using BI_Core.Enums
 @using Infrastructure
 
+
+
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" 
               Style="display: flex; margin: 0!important; padding: 0!important;">
     <div style="width: 25vw; padding: 20px; min-width: 340px; display: flex; flex-direction: column; gap: 20px;">
         @if (_isInitDone)
         {
-            <MudCard Style="padding: 20px;" Outlined="@true">
-                <MudCardHeader Style="padding: 10px;">
+            <MudCard Style="padding: 16px;" Outlined="@true">
+                <MudCardHeader Style="padding: 10px 16px 10px 16px;">
                     <CardHeaderContent>
                         <MudText Typo="Typo.h6">Aggregierte Daten</MudText>
                     </CardHeaderContent>
                 </MudCardHeader>
-                <MudCardContent Style="padding: 0 16px 0 16px;">
+                <MudCardContent Style="padding: 0 16px 10px 16px;">
+                    Nach Regionalschlüsseln (n = 401) zusammengefasste Durchschnitte (linke Farbskala). 
                     <DataSetRadio
                         ShowAggregateOptions="true"
                         DataSetSelectionHasChanged="async x => await DatasetSelectionChangedCallback(x, true)"/>
                     @switch (_selectedAggregateDataset)
                     {
                         case DataSet.Rent:
-                            <Dropdown DataType="@DataType.RentNumerical" SelectedValueHasChanged="@BaseValueChanged"/>
+                            <Dropdown DataType="@DataType.RentNumerical"
+                                      InitialSelected="@_selectedBaseValue"
+                                      SelectedValueHasChanged="@BaseValueChanged"/>
                             break;
                         case DataSet.Buy:
-                            <Dropdown DataType="@DataType.BuyNumerical" SelectedValueHasChanged="@BaseValueChanged"/>
+                            <Dropdown DataType="@DataType.BuyNumerical"
+                                      InitialSelected="@_selectedBaseValue"
+                                      SelectedValueHasChanged="@BaseValueChanged"/>
                             break;
                         case DataSet.Economic:
-                            <Dropdown DataType="@DataType.Regional" SelectedValueHasChanged="@BaseValueChanged"/>
+                            <Dropdown DataType="@DataType.Regional"
+                                      InitialSelected="@_selectedBaseValue"
+                                      SelectedValueHasChanged="@BaseValueChanged"/>
                             break;
                         case DataSet.Demographic:
-                            <Dropdown DataType="@DataType.Demographic" SelectedValueHasChanged="@BaseValueChanged"/>
+                            <Dropdown DataType="@DataType.Demographic"
+                                      InitialSelected="@_selectedBaseValue"
+                                      SelectedValueHasChanged="@BaseValueChanged"/>
                             break;
                     }
                 </MudCardContent>
             </MudCard>
-            <MudCard Style="padding: 20px;" Outlined="@true">
-                <MudCardHeader Style="padding: 10px;">
+            <MudCard Style="padding: 16px;" Outlined="@true">
+                <MudCardHeader Style="padding: 10px 16px 10px 16px;">
                     <CardHeaderContent>
                         <MudText Typo="Typo.h6">Scatter Daten</MudText>
                     </CardHeaderContent>
                 </MudCardHeader>
-                <MudCardContent Style="padding: 0 16px 0 16px;">
+                <MudCardContent Style="padding: 0 16px 10px 16px;">
+                    Anzeige für jeden einzelnen Datensatz (rechte Farbskala)
+                    <div style="display: flex;">
+                        <MudSlider T="int" TickMarks="true" Step="1" Min="6" Max="30" 
+                                   bind-Value="_selectedScatterMarkerSize" ValueLabel="@true"/>
+                        <MudButton OnClick="async () => await UpdateMarkerSize()">Update</MudButton>
+                    </div>
                     <DataSetRadio
                         ShowAggregateOptions="false"
                         DataSetSelectionHasChanged="async x => await DatasetSelectionChangedCallback(x, false)"/>
                     @switch (_selectedOverlayDataset)
                     {
                         case DataSet.Rent:
-                            <Dropdown DataType="@DataType.RentNumerical" 
+                            <Dropdown DataType="@DataType.RentNumerical"
+                                      InitialSelected="@_selectedOverlayValue"
                                       SelectedValueHasChanged="async x => await OverlayColorValueChanged(x)"/>
                             break;
                         case DataSet.Buy:
-                            <Dropdown DataType="@DataType.BuyNumerical" 
+                            <Dropdown DataType="@DataType.BuyNumerical"
+                                      InitialSelected="@_selectedOverlayValue"
                                       SelectedValueHasChanged="async x => await OverlayColorValueChanged(x)"/>
                             break;
                     }
                 </MudCardContent>
             </MudCard>
-            <MudCard Style="padding: 20px;" Outlined="@true">
-                <MudCardHeader Style="padding: 10px;">
+            <MudCard Style="padding: 16px;" Outlined="@true">
+                <MudCardHeader Style="padding: 10px 16px 0 16px;">
                     <CardHeaderContent>
                         <MudText Typo="Typo.h6">Farbauswahl</MudText>
                     </CardHeaderContent>
                 </MudCardHeader>
-                <MudCardContent Style="padding: 0 16px 0 16px;">
-                    <MudSelect T="string" 
-                               Value=@Vm.Colors[14]
-                               HelperText="Farbe links"
+                <MudCardContent Style="padding: 0 16px 0 16px; display: flex; gap: 32px;">
+                    <MudSelect T="string"
+                               Dense="true"
+                               HelperText="Farbskala Basis"
                                ValueChanged="async x => await ColorChanged(x, 0)">
                         @foreach (var col in Vm.Colors)
                         {
@@ -76,8 +95,8 @@
                         }
                     </MudSelect>
                     <MudSelect T="string"
-                               Value="@Vm.Colors[2]"
-                               HelperText="Farbe rechts"
+                               Dense="true"
+                               HelperText="Farbskala Scatter"
                                ValueChanged="async x => await ColorChanged(x, 1)">
                         @foreach (var col in Vm.Colors)
                         {
@@ -86,6 +105,7 @@
                     </MudSelect>
                 </MudCardContent>
             </MudCard>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Download">Download</MudButton>
         }
         else
         {

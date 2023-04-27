@@ -12,6 +12,9 @@ public partial class Dropdown
     
     [Parameter] 
     public DataType DataType { get; set; }
+
+    [Parameter] 
+    public string InitialSelected { get; set; } = "";
     
     [Inject]
     public DropdownViewModel Vm { get; set; }
@@ -19,6 +22,7 @@ public partial class Dropdown
     protected override Task OnParametersSetAsync()
     {
         Vm.InitTyp(DataType);
+        Vm.Selected = InitialSelected;
         return base.OnParametersSetAsync();
     }
 

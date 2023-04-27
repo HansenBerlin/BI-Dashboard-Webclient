@@ -1,6 +1,7 @@
 ﻿<MudSelect Label="@Vm.GetLabel()" 
            HelperText="@Vm.GetHelperText()" 
            bind-Value="Vm.Selected"
+           Dense="true"
            T="string" 
            ValueChanged="async x => await OnSelectionChanged(x)">
     @foreach ((string k, string v) in Vm.GetDropdownData())

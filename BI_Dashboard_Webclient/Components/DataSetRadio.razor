@@ -1,5 +1,5 @@
 ﻿@using BI_Core.Enums
-<MudItem xs="12" md="1">
+<MudItem xs="12" md="1" Style="padding-left: 6px;">
     <MudRadioGroup SelectedOption="_selectedDataSet" SelectedOptionChanged="async x => await OnSelectionChange(x)" T="DataSet">
         <MudRadio Size="Size.Small" Dense="true" Option="@DataSet.Rent" Color="Color.Primary" UnCheckedColor="Color.Default">Mietbestand</MudRadio>
         <MudRadio Size="Size.Small" Dense="true" Option="@DataSet.Buy" Color="Color.Primary" UnCheckedColor="Color.Default">Kaufangebote</MudRadio>
