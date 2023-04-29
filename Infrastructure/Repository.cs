@@ -13,6 +13,7 @@ public class Repository<T>
     private readonly HttpClient _httpClient;
     private readonly JsonSerializerOptions _options;
     private string _uri;
+    private const string BaseUri = "http://bi-api-db";
 
     public Repository(HttpClient httpClient)
     {
@@ -22,7 +23,7 @@ public class Repository<T>
 
     public void Init(string url)
     {
-        _uri = url;
+        _uri = BaseUri + url;
     }
 
     public async Task<List<T>> GetAll()

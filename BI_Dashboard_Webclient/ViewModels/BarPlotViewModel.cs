@@ -12,7 +12,7 @@ public class BarPlotViewModel
     public BarPlotViewModel(Repository<ImmoRentDataModelBase> repository)
     {
         _repository = repository;
-        string url = "http://localhost:6002/rentdata";
+        string url = "/rentdata";
         _repository.Init(url);
     }
 

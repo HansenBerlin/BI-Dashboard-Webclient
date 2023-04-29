@@ -239,7 +239,7 @@
     {
         if (firstRender)
         {
-            string url = "http://localhost:5000/predict";
+            string url = "http://bi-api-ml/predict";
             Repository.Init(url);
             _houseIds = RealEstateBookmark.GetallIds();
             _houseId = _houseIds.Count > 0 ? _houseIds[0] : _houseId;

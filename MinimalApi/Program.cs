@@ -170,7 +170,7 @@ app.MapGet("/rentdata/dashboard", async (GetConnection connectionGetter) =>
     })
     .WithOpenApi();
 
-app.Run("http://localhost:6002");
+app.Run();
 
 namespace MinimalApi
 {

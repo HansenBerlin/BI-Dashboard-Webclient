@@ -123,7 +123,7 @@
     {
         if (firstRender)
         {
-            const string url = "http://localhost:6002/rentdata/dashboard";
+            const string url = "/rentdata/dashboard";
             Repository.Init(url);
             var data = await Repository.GetAll();
             _data = data.First();

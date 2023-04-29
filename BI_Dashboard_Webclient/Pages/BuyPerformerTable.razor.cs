@@ -43,7 +43,7 @@ public partial class BuyPerformerTable
     {
         if (firstRender)
         {
-            const string url = "http://localhost:6002/buydata/scores/info";
+            const string url = "/buydata/scores/info";
             Repository.Init(url);
             ElementsTop = await Repository.GetAll("true");
             var response = await Repository.GetAll("false");
