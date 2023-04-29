@@ -1,0 +1,655 @@
+﻿{
+  "Scenario": "Regression",
+  "DataSource": {
+    "Type": "TabularFile",
+    "Version": 1,
+    "FilePath": "C:\\Users\\Hannes\\Documents\\_HWR\\WiSe23\\Fischer\\uebung1\\uebung2\\ml\\files_final\\immoscout_rent_mlready_sample.csv",
+    "Delimiter": ",",
+    "DecimalMarker": ".",
+    "HasHeader": true,
+    "ColumnProperties": [
+      {
+        "ColumnName": "baseRent",
+        "ColumnPurpose": "Label",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 4
+      },
+      {
+        "ColumnName": "livingSpace",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 4
+      },
+      {
+        "ColumnName": "noRooms",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 4
+      },
+      {
+        "ColumnName": "condition",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": true,
+        "Type": "Column",
+        "Version": 4
+      },
+      {
+        "ColumnName": "interiorQual",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": true,
+        "Type": "Column",
+        "Version": 4
+      },
+      {
+        "ColumnName": "lift",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": true,
+        "Type": "Column",
+        "Version": 4
+      },
+      {
+        "ColumnName": "typeOfFlat",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": true,
+        "Type": "Column",
+        "Version": 4
+      },
+      {
+        "ColumnName": "telekomUploadSpeed",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 4
+      },
+      {
+        "ColumnName": "floor",
+        "ColumnPurpose": "Ignore",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 4
+      },
+      {
+        "ColumnName": "garden",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": true,
+        "Type": "Column",
+        "Version": 4
+      },
+      {
+        "ColumnName": "heatingType",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": true,
+        "Type": "Column",
+        "Version": 4
+      },
+      {
+        "ColumnName": "yearConstructed",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 4
+      },
+      {
+        "ColumnName": "lon",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 4
+      },
+      {
+        "ColumnName": "lat",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 4
+      }
+    ]
+  },
+  "Environment": {
+    "Type": "LocalCPU",
+    "Version": 1
+  },
+  "RunHistory": {
+    "Version": 3,
+    "Type": "Result",
+    "Trials": [
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "LightGbmRegression",
+        "Score": 0.86323197643121607,
+        "RuntimeInSeconds": 6.294,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e4",
+          "e0": {
+            "OutputColumnNames": [
+              "livingSpace",
+              "noRooms",
+              "condition",
+              "interiorQual",
+              "lift",
+              "typeOfFlat",
+              "telekomUploadSpeed",
+              "garden",
+              "heatingType",
+              "yearConstructed",
+              "lon",
+              "lat"
+            ],
+            "InputColumnNames": [
+              "livingSpace",
+              "noRooms",
+              "condition",
+              "interiorQual",
+              "lift",
+              "typeOfFlat",
+              "telekomUploadSpeed",
+              "garden",
+              "heatingType",
+              "yearConstructed",
+              "lon",
+              "lat"
+            ]
+          },
+          "e1": {
+            "InputColumnNames": [
+              "livingSpace",
+              "noRooms",
+              "condition",
+              "interiorQual",
+              "lift",
+              "typeOfFlat",
+              "telekomUploadSpeed",
+              "garden",
+              "heatingType",
+              "yearConstructed",
+              "lon",
+              "lat"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e4": {
+            "NumberOfLeaves": 4,
+            "MinimumExampleCountPerLeaf": 24,
+            "LearningRate": 0.70753681693653636,
+            "NumberOfTrees": 2946,
+            "SubsampleFraction": 0.81820820321762766,
+            "MaximumBinCountPerFeature": 402,
+            "FeatureFraction": 0.99999999,
+            "L1Regularization": 2.1806855360458523E-09,
+            "L2Regularization": 0.99999977667298645,
+            "LabelColumnName": "baseRent",
+            "FeatureColumnName": "Features"
+          },
+          "e2": {
+            "NumberOfLeaves": 4,
+            "MinimumExampleCountPerLeaf": 20,
+            "NumberOfTrees": 4,
+            "MaximumBinCountPerFeature": 255,
+            "FeatureFraction": 1.0,
+            "LearningRate": 0.099999999999999978,
+            "LabelColumnName": "baseRent",
+            "FeatureColumnName": "Features"
+          },
+          "e3": {
+            "NumberOfTrees": 4,
+            "NumberOfLeaves": 4,
+            "FeatureFraction": 1.0,
+            "LabelColumnName": "baseRent",
+            "FeatureColumnName": "Features"
+          },
+          "e5": {
+            "L1Regularization": 1.0,
+            "L2Regularization": 1.0,
+            "LabelColumnName": "baseRent",
+            "FeatureColumnName": "Features"
+          },
+          "e6": {
+            "L1Regularization": 1.0,
+            "L2Regularization": 0.1,
+            "LabelColumnName": "baseRent",
+            "FeatureColumnName": "Features"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastForestRegression",
+        "Score": 0.69947204648539452,
+        "RuntimeInSeconds": 0.542,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e3",
+          "e0": {
+            "OutputColumnNames": [
+              "livingSpace",
+              "noRooms",
+              "condition",
+              "interiorQual",
+              "lift",
+              "typeOfFlat",
+              "telekomUploadSpeed",
+              "garden",
+              "heatingType",
+              "yearConstructed",
+              "lon",
+              "lat"
+            ],
+            "InputColumnNames": [
+              "livingSpace",
+              "noRooms",
+              "condition",
+              "interiorQual",
+              "lift",
+              "typeOfFlat",
+              "telekomUploadSpeed",
+              "garden",
+              "heatingType",
+              "yearConstructed",
+              "lon",
+              "lat"
+            ]
+          },
+          "e1": {
+            "InputColumnNames": [
+              "livingSpace",
+              "noRooms",
+              "condition",
+              "interiorQual",
+              "lift",
+              "typeOfFlat",
+              "telekomUploadSpeed",
+              "garden",
+              "heatingType",
+              "yearConstructed",
+              "lon",
+              "lat"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e3": {
+            "NumberOfTrees": 27,
+            "NumberOfLeaves": 7163,
+            "FeatureFraction": 0.7833748,
+            "LabelColumnName": "baseRent",
+            "FeatureColumnName": "Features"
+          },
+          "e2": {
+            "NumberOfLeaves": 4,
+            "MinimumExampleCountPerLeaf": 20,
+            "NumberOfTrees": 4,
+            "MaximumBinCountPerFeature": 255,
+            "FeatureFraction": 1.0,
+            "LearningRate": 0.099999999999999978,
+            "LabelColumnName": "baseRent",
+            "FeatureColumnName": "Features"
+          },
+          "e4": {
+            "NumberOfLeaves": 4,
+            "MinimumExampleCountPerLeaf": 20,
+            "LearningRate": 1.0,
+            "NumberOfTrees": 4,
+            "SubsampleFraction": 1.0,
+            "MaximumBinCountPerFeature": 255,
+            "FeatureFraction": 1.0,
+            "L1Regularization": 2E-10,
+            "L2Regularization": 1.0,
+            "LabelColumnName": "baseRent",
+            "FeatureColumnName": "Features"
+          },
+          "e5": {
+            "L1Regularization": 1.0,
+            "L2Regularization": 1.0,
+            "LabelColumnName": "baseRent",
+            "FeatureColumnName": "Features"
+          },
+          "e6": {
+            "L1Regularization": 1.0,
+            "L2Regularization": 0.1,
+            "LabelColumnName": "baseRent",
+            "FeatureColumnName": "Features"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastForestRegression",
+        "Score": 0.69569170518069412,
+        "RuntimeInSeconds": 0.641,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e3",
+          "e0": {
+            "OutputColumnNames": [
+              "livingSpace",
+              "noRooms",
+              "condition",
+              "interiorQual",
+              "lift",
+              "typeOfFlat",
+              "telekomUploadSpeed",
+              "garden",
+              "heatingType",
+              "yearConstructed",
+              "lon",
+              "lat"
+            ],
+            "InputColumnNames": [
+              "livingSpace",
+              "noRooms",
+              "condition",
+              "interiorQual",
+              "lift",
+              "typeOfFlat",
+              "telekomUploadSpeed",
+              "garden",
+              "heatingType",
+              "yearConstructed",
+              "lon",
+              "lat"
+            ]
+          },
+          "e1": {
+            "InputColumnNames": [
+              "livingSpace",
+              "noRooms",
+              "condition",
+              "interiorQual",
+              "lift",
+              "typeOfFlat",
+              "telekomUploadSpeed",
+              "garden",
+              "heatingType",
+              "yearConstructed",
+              "lon",
+              "lat"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e3": {
+            "NumberOfTrees": 40,
+            "NumberOfLeaves": 173,
+            "FeatureFraction": 0.9567164,
+            "LabelColumnName": "baseRent",
+            "FeatureColumnName": "Features"
+          },
+          "e2": {
+            "NumberOfLeaves": 4,
+            "MinimumExampleCountPerLeaf": 20,
+            "NumberOfTrees": 4,
+            "MaximumBinCountPerFeature": 255,
+            "FeatureFraction": 1.0,
+            "LearningRate": 0.099999999999999978,
+            "LabelColumnName": "baseRent",
+            "FeatureColumnName": "Features"
+          },
+          "e4": {
+            "NumberOfLeaves": 4,
+            "MinimumExampleCountPerLeaf": 20,
+            "LearningRate": 1.0,
+            "NumberOfTrees": 4,
+            "SubsampleFraction": 1.0,
+            "MaximumBinCountPerFeature": 255,
+            "FeatureFraction": 1.0,
+            "L1Regularization": 2E-10,
+            "L2Regularization": 1.0,
+            "LabelColumnName": "baseRent",
+            "FeatureColumnName": "Features"
+          },
+          "e5": {
+            "L1Regularization": 1.0,
+            "L2Regularization": 1.0,
+            "LabelColumnName": "baseRent",
+            "FeatureColumnName": "Features"
+          },
+          "e6": {
+            "L1Regularization": 1.0,
+            "L2Regularization": 0.1,
+            "LabelColumnName": "baseRent",
+            "FeatureColumnName": "Features"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastForestRegression",
+        "Score": 0.69366857678341243,
+        "RuntimeInSeconds": 0.442,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e3",
+          "e0": {
+            "OutputColumnNames": [
+              "livingSpace",
+              "noRooms",
+              "condition",
+              "interiorQual",
+              "lift",
+              "typeOfFlat",
+              "telekomUploadSpeed",
+              "garden",
+              "heatingType",
+              "yearConstructed",
+              "lon",
+              "lat"
+            ],
+            "InputColumnNames": [
+              "livingSpace",
+              "noRooms",
+              "condition",
+              "interiorQual",
+              "lift",
+              "typeOfFlat",
+              "telekomUploadSpeed",
+              "garden",
+              "heatingType",
+              "yearConstructed",
+              "lon",
+              "lat"
+            ]
+          },
+          "e1": {
+            "InputColumnNames": [
+              "livingSpace",
+              "noRooms",
+              "condition",
+              "interiorQual",
+              "lift",
+              "typeOfFlat",
+              "telekomUploadSpeed",
+              "garden",
+              "heatingType",
+              "yearConstructed",
+              "lon",
+              "lat"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e3": {
+            "NumberOfTrees": 12,
+            "NumberOfLeaves": 16,
+            "FeatureFraction": 1.0,
+            "LabelColumnName": "baseRent",
+            "FeatureColumnName": "Features"
+          },
+          "e2": {
+            "NumberOfLeaves": 4,
+            "MinimumExampleCountPerLeaf": 20,
+            "NumberOfTrees": 4,
+            "MaximumBinCountPerFeature": 255,
+            "FeatureFraction": 1.0,
+            "LearningRate": 0.099999999999999978,
+            "LabelColumnName": "baseRent",
+            "FeatureColumnName": "Features"
+          },
+          "e4": {
+            "NumberOfLeaves": 4,
+            "MinimumExampleCountPerLeaf": 20,
+            "LearningRate": 1.0,
+            "NumberOfTrees": 4,
+            "SubsampleFraction": 1.0,
+            "MaximumBinCountPerFeature": 255,
+            "FeatureFraction": 1.0,
+            "L1Regularization": 2E-10,
+            "L2Regularization": 1.0,
+            "LabelColumnName": "baseRent",
+            "FeatureColumnName": "Features"
+          },
+          "e5": {
+            "L1Regularization": 1.0,
+            "L2Regularization": 1.0,
+            "LabelColumnName": "baseRent",
+            "FeatureColumnName": "Features"
+          },
+          "e6": {
+            "L1Regularization": 1.0,
+            "L2Regularization": 0.1,
+            "LabelColumnName": "baseRent",
+            "FeatureColumnName": "Features"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastForestRegression",
+        "Score": 0.6862231179331828,
+        "RuntimeInSeconds": 0.836,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e3",
+          "e0": {
+            "OutputColumnNames": [
+              "livingSpace",
+              "noRooms",
+              "condition",
+              "interiorQual",
+              "lift",
+              "typeOfFlat",
+              "telekomUploadSpeed",
+              "garden",
+              "heatingType",
+              "yearConstructed",
+              "lon",
+              "lat"
+            ],
+            "InputColumnNames": [
+              "livingSpace",
+              "noRooms",
+              "condition",
+              "interiorQual",
+              "lift",
+              "typeOfFlat",
+              "telekomUploadSpeed",
+              "garden",
+              "heatingType",
+              "yearConstructed",
+              "lon",
+              "lat"
+            ]
+          },
+          "e1": {
+            "InputColumnNames": [
+              "livingSpace",
+              "noRooms",
+              "condition",
+              "interiorQual",
+              "lift",
+              "typeOfFlat",
+              "telekomUploadSpeed",
+              "garden",
+              "heatingType",
+              "yearConstructed",
+              "lon",
+              "lat"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e3": {
+            "NumberOfTrees": 4,
+            "NumberOfLeaves": 4,
+            "FeatureFraction": 1.0,
+            "LabelColumnName": "baseRent",
+            "FeatureColumnName": "Features"
+          },
+          "e2": {
+            "NumberOfLeaves": 4,
+            "MinimumExampleCountPerLeaf": 20,
+            "NumberOfTrees": 4,
+            "MaximumBinCountPerFeature": 255,
+            "FeatureFraction": 1.0,
+            "LearningRate": 0.099999999999999978,
+            "LabelColumnName": "baseRent",
+            "FeatureColumnName": "Features"
+          },
+          "e4": {
+            "NumberOfLeaves": 4,
+            "MinimumExampleCountPerLeaf": 20,
+            "LearningRate": 1.0,
+            "NumberOfTrees": 4,
+            "SubsampleFraction": 1.0,
+            "MaximumBinCountPerFeature": 255,
+            "FeatureFraction": 1.0,
+            "L1Regularization": 2E-10,
+            "L2Regularization": 1.0,
+            "LabelColumnName": "baseRent",
+            "FeatureColumnName": "Features"
+          },
+          "e5": {
+            "L1Regularization": 1.0,
+            "L2Regularization": 1.0,
+            "LabelColumnName": "baseRent",
+            "FeatureColumnName": "Features"
+          },
+          "e6": {
+            "L1Regularization": 1.0,
+            "L2Regularization": 0.1,
+            "LabelColumnName": "baseRent",
+            "FeatureColumnName": "Features"
+          }
+        }
+      }
+    ],
+    "Estimators": {
+      "e0": "ReplaceMissingValues",
+      "e1": "Concatenate",
+      "e2": "FastTreeRegression",
+      "e3": "FastForestRegression",
+      "e4": "LightGbmRegression",
+      "e5": "LbfgsPoissonRegressionRegression",
+      "e6": "SdcaRegression"
+    },
+    "Schema": "e0 * e1 * (e2 + e3 + e4 + e5 + e6)",
+    "MetricName": "RSquared",
+    "ModelFilePath": "C:\\Users\\Hannes\\source\\repos\\MlTestFischer\\MlTestFischer\\MLModel2.mlnet"
+  },
+  "Type": "TrainingConfig",
+  "Version": 4,
+  "TrainingOption": {
+    "Version": 1,
+    "Type": "RegressionTrainingOption",
+    "TrainingTime": 120,
+    "LabelColumn": "baseRent",
+    "ValidationOption": {
+      "Version": 0,
+      "Type": "CrossValidationValidationOption",
+      "NumberOfFolds": 5
+    }
+  }
+}

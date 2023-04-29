@@ -47,9 +47,9 @@ public partial class Map
 
     public override async Task SetParametersAsync(ParameterView parameters)
     {
-        string url = "https://localhost:6001/aggregates";
+        string url = "http://localhost:6002/aggregates";
         AggregatesRepository.Init(url);
-        url = "https://localhost:6001/raw";
+        url = "http://localhost:6002/raw";
         ImmoDataRepository.Init(url);
 
         var geoJsonData = await StatefulRepository.Get();

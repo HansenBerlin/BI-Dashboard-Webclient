@@ -43,7 +43,7 @@ public partial class RentPerformerTable
     {
         if (firstRender)
         {
-            const string url = "https://localhost:6001/rentdata/scores/info";
+            const string url = "http://localhost:6002/rentdata/scores/info";
             Repository.Init(url);
             ElementsTop = await Repository.GetAll("true");
             var response = await Repository.GetAll("false");

@@ -33,7 +33,7 @@
 
     public override async Task SetParametersAsync(ParameterView parameters)
     {
-        string url = "https://localhost:6001/aggregates";
+        string url = "http://localhost:6002/aggregates";
         AggregatesRepository.Init(url);
         var boxDataBaseRent = await AggregatesRepository.GetAll("rent/baseRent");
         var boxDataServiceCost = await AggregatesRepository.GetAll("rent/serviceCharge");

@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BI_Core", "BI_Core\BI_Core.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{972EED96-4313-47AC-9C42-1473CC713091}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MLModel2_WebApi1", "..\MlTestFischer\MLModel2_WebApi1\MLModel2_WebApi1.csproj", "{B0566D17-CFFF-453C-800F-C41A741EE98D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MLModel2_WebApi1", "MLModel2_WebApi1\MLModel2_WebApi1.csproj", "{32D40D03-7E04-4C0E-A68F-ABC9CF7C1C71}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,9 +39,9 @@ Global
 		{972EED96-4313-47AC-9C42-1473CC713091}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{972EED96-4313-47AC-9C42-1473CC713091}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{972EED96-4313-47AC-9C42-1473CC713091}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B0566D17-CFFF-453C-800F-C41A741EE98D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B0566D17-CFFF-453C-800F-C41A741EE98D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B0566D17-CFFF-453C-800F-C41A741EE98D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B0566D17-CFFF-453C-800F-C41A741EE98D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32D40D03-7E04-4C0E-A68F-ABC9CF7C1C71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32D40D03-7E04-4C0E-A68F-ABC9CF7C1C71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32D40D03-7E04-4C0E-A68F-ABC9CF7C1C71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32D40D03-7E04-4C0E-A68F-ABC9CF7C1C71}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

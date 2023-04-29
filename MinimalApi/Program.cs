@@ -24,6 +24,11 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+
+app.MapGet("/", async () => Results.Ok("API Health Check: " + DateTime.Now))
+    .WithOpenApi();
+
+
 app.MapGet("/rentdata", async (GetConnection connectionGetter) =>
     {
         using var con = await connectionGetter();
@@ -165,7 +170,7 @@ app.MapGet("/rentdata/dashboard", async (GetConnection connectionGetter) =>
     })
     .WithOpenApi();
 
-app.Run();
+app.Run("http://localhost:6002");
 
 namespace MinimalApi
 {

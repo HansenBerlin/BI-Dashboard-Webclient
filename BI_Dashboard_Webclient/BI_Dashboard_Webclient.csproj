@@ -6,6 +6,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <AssemblyName>BI_Dashboard_Webclient</AssemblyName>
         <RootNamespace>BI_Dashboard_Webclient</RootNamespace>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <UserSecretsId>8e76a129-93f1-46d7-81a7-46a0063b6bba</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
@@ -17,6 +19,12 @@
     <ItemGroup>
       <ProjectReference Include="..\BI_Core\BI_Core.csproj" />
       <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>
