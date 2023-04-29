@@ -83,8 +83,8 @@ public partial class Map
                 ColorAxis = "coloraxis2",
                 //ColorArray = new List<object>(), 
                 //Size = _selectedScatterMarkerSize,
-                Size = 6,
-                Opacity = 0.9M
+                Size = 12,
+                Opacity = 0.7M
             }
         };
 
@@ -239,7 +239,6 @@ public partial class Map
         if (scatterOverlayDataColor[0].IsResponseSuccess == false)
         {
             _isInitDone = true;
-            StateHasChanged();
             return;
         }
         
@@ -260,14 +259,8 @@ public partial class Map
         
         _layout.ColorAxis[1].CMax = max;
         _layout.ColorAxis[1].CMin = min;
-        //_plotlyChart.Layout.ColorAxis[1].ColorBar.Title.Text = _selectedOverlayValue;
-
-        //await _plotlyChart.React();
         await _plotlyChart.NewPlot();
-        //await _plotlyChart.Update();
         _isInitDone = true;
-        //await InvokeAsync(StateHasChanged);
-
     }
 
    

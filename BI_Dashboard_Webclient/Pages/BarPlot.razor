@@ -2,6 +2,7 @@
 @using Plotly.Blazor.LayoutLib
 @using Plotly.Blazor.ConfigLib
 @using BI_Core
+@using BI_Dashboard_Webclient.ViewModels
 @using Infrastructure
 
 
@@ -23,9 +24,10 @@
 @code
 {
     [Inject]
-    public Repository<ImmoRentDataModelBase> Repository { get; set; }
+    public BarPlotViewModel Vm { get; set; }
     
-    PlotlyChart _chart;
+    private PlotlyChart _chart;
+    bool _isInitDone;
 
     readonly Config _config = new()
     {
@@ -41,67 +43,28 @@
         BarGap = 0,
         Height = 800
     };
-
-    List<ITrace> _data = new();
-    List<object> _years = new();
-    List<List<object>> _heating = new();
-    bool _isInitDone;
-
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            string url = "https://localhost:6001/rentdata";
-            Repository.Init(url);
-            var rentData = await Repository.GetAll();
-            var years = rentData
-                .Select(x => x.YearConstructed)
-                .Where(x => x > 1880)
-                .Distinct()
-                .ToList();
-            var heatingTypes = rentData.Select(x => x.HeatingType).Distinct().ToList();
-            
-            List<List<double>> relativeVals = heatingTypes.Select(_ => new List<double>()).ToList();
-            
-            foreach (int year in years)
-            {
-                int countTotal = rentData.Count(x => x.YearConstructed == year);
-                for (var i = 0; i < heatingTypes.Count; i++)
-                {
-                    string ht = heatingTypes[i];
-                    int count = rentData.Count(x => x.HeatingType == ht && x.YearConstructed == year);
-                    double relative = (double) count / countTotal;
-                    relativeVals[i].Add(relative);
-                }
-            }
+            await Vm.Init();
+            var (years, heatingTypes, heating) = Vm.ExtractData();
 
-            _years = years.Cast<object>().ToList();
-            _heating = relativeVals.Select(l => l.Cast<object>().ToList()).ToList();
-            //_heating = relativeVals.Select(l => l.Cast<object>().ToList()).ToList();
-            _chart.Layout = _layout;
-            _chart.Config = _config;
-            //_data = new List<ITrace>();
-            try
-            {
-                //await _chart.Relayout();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-            for (int i = 0; i < _heating.Count; i++)
+            for (int i = 0; i < heating.Count; i++)
             {
                 var trace = new Bar
                 {
-                    X = _years,
-                    Y = _heating[i],
+                    X = years,
+                    Y = heating[i],
                     Name = heatingTypes[i]
                 };
                 await _chart.AddTrace(trace);
             }
 
+            _chart.Layout = _layout;
+            _chart.Config = _config;
             await _chart.Update();
-            //await _chart.AddTrace(_data[1]);
             _isInitDone = true;
             StateHasChanged();
         }

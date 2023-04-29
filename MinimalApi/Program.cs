@@ -63,7 +63,7 @@ app.MapGet("/aggregates/{dataset}/{columnName}", async (GetConnection connection
         }; 
         
         using var con = await connectionGetter();
-        var data = await con.QueryAsync<AggregateGenericModel>(
+        var data = await con.QueryAsync<GenericAggregatesModel>(
             $"select * from (select agskey, avg({columnName}) as genericProperty " +
             $"from {dataset} group by agskey) a " +
             $"where a.agskey is not null;");
